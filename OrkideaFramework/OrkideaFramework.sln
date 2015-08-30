@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orkidea.Framework.Azure", "Orkidea.Framework.Azure\Orkidea.Framework.Azure.csproj", "{C1C5A65C-88F5-46A3-84F2-FFF0F94CB3AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orkidea.Framework.Security", "Orkidea.Framework.Security\Orkidea.Framework.Security.csproj", "{98A1030F-48E7-4BDD-A645-AEB9C56D6B64}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orkidea.Framework.Messaging", "Orkidea.Framework.Messaging\Orkidea.Framework.Messaging.csproj", "{84F96997-84E3-4745-A374-060B0DA21A8D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C1C5A65C-88F5-46A3-84F2-FFF0F94CB3AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1C5A65C-88F5-46A3-84F2-FFF0F94CB3AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1C5A65C-88F5-46A3-84F2-FFF0F94CB3AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1C5A65C-88F5-46A3-84F2-FFF0F94CB3AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98A1030F-48E7-4BDD-A645-AEB9C56D6B64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98A1030F-48E7-4BDD-A645-AEB9C56D6B64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98A1030F-48E7-4BDD-A645-AEB9C56D6B64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98A1030F-48E7-4BDD-A645-AEB9C56D6B64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84F96997-84E3-4745-A374-060B0DA21A8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84F96997-84E3-4745-A374-060B0DA21A8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84F96997-84E3-4745-A374-060B0DA21A8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84F96997-84E3-4745-A374-060B0DA21A8D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
