@@ -9,6 +9,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orkidea.Framework.Security"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orkidea.Framework.Messaging", "Orkidea.Framework.Messaging\Orkidea.Framework.Messaging.csproj", "{84F96997-84E3-4745-A374-060B0DA21A8D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orkidea.Framework.SAP.BusinessOne.Entities", "Orkidea.Framework.SAP.BusinessOne.Entities\Orkidea.Framework.SAP.BusinessOne.Entities.csproj", "{D7842760-5AB5-4432-8AA6-4318E5538C79}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SAP", "SAP", "{A75CB704-D2DB-40D4-A758-0722778FAF6C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "General", "General", "{91F3901A-7DAA-465C-9818-F2616AFFAA4D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orkidea.Framework.SAP.BusinessOne.DiApiClient", "Orkidea.Framework.SAP.BusinessOne.DiApiClient\Orkidea.Framework.SAP.BusinessOne.DiApiClient.csproj", "{D545A4E4-3C4D-4ECC-AA1B-C5E68080039E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,8 +35,23 @@ Global
 		{84F96997-84E3-4745-A374-060B0DA21A8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84F96997-84E3-4745-A374-060B0DA21A8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84F96997-84E3-4745-A374-060B0DA21A8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7842760-5AB5-4432-8AA6-4318E5538C79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7842760-5AB5-4432-8AA6-4318E5538C79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7842760-5AB5-4432-8AA6-4318E5538C79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7842760-5AB5-4432-8AA6-4318E5538C79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D545A4E4-3C4D-4ECC-AA1B-C5E68080039E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D545A4E4-3C4D-4ECC-AA1B-C5E68080039E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D545A4E4-3C4D-4ECC-AA1B-C5E68080039E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D545A4E4-3C4D-4ECC-AA1B-C5E68080039E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D7842760-5AB5-4432-8AA6-4318E5538C79} = {A75CB704-D2DB-40D4-A758-0722778FAF6C}
+		{D545A4E4-3C4D-4ECC-AA1B-C5E68080039E} = {A75CB704-D2DB-40D4-A758-0722778FAF6C}
+		{C1C5A65C-88F5-46A3-84F2-FFF0F94CB3AB} = {91F3901A-7DAA-465C-9818-F2616AFFAA4D}
+		{84F96997-84E3-4745-A374-060B0DA21A8D} = {91F3901A-7DAA-465C-9818-F2616AFFAA4D}
+		{98A1030F-48E7-4BDD-A645-AEB9C56D6B64} = {91F3901A-7DAA-465C-9818-F2616AFFAA4D}
 	EndGlobalSection
 EndGlobal
