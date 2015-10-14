@@ -14,90 +14,72 @@ namespace Orkidea.Framework.SAP.BusinessOne.Entities.MarketingDocuments
     [DataContract(Namespace = "http://WSSAP")]
     public class MarketingDocument
     {
-        #region Atributos
-        /// <summary>
-        /// Numero Interno del documento
-        /// </summary>
+        #region Fields        
         [DataMember]
-        public int DocEntry { set; get; }
-        /// <summary>
-        /// Número del documento de acuerdo a la serie
-        /// </summary>
+        public int docEntry { set; get; }
+        
         [DataMember]
-        public int DocNum { set; get; }
-        /// <summary>
-        /// Número del documento de acuerdo a la serie
-        /// </summary>
+        public int docNum { set; get; }
+        
         [DataMember]
-        public int Serie { set; get; }
-        /// <summary>
-        /// Código del proveedor / cliente
-        /// </summary>
+        public int serie { set; get; }
+        
         [DataMember]
-        public string CardCode { set; get; }
-        /// <summary>
-        /// Nombre del proveedor / cliente
-        /// </summary>
-        [DataMember]
-        public string CardName { set; get; }
-        /// <summary>
-        /// Número del documento referencia
-        /// </summary>
-        [DataMember]
-        public string NumAtCard { set; get; }
-        /// <summary>
-        /// Fecha del documento
-        /// </summary>
-        [DataMember]
-        public DateTime DocDate { set; get; }
-        /// <summary>
-        /// Fecha del documento
-        /// </summary>
-        [DataMember]
-        public DateTime DocDueDate { set; get; }
-        /// <summary>
-        /// Fecha del documento
-        /// </summary>
-        [DataMember]
-        public DateTime TaxDate { set; get; }
-        /// <summary>
-        /// Estado del documento (Cerrrado o Abierto)
-        /// </summary>
-        [DataMember]
-        public string DocStatus { set; get; }
-        /// <summary>
-        /// Tipo de documento (Item o Servicio)
-        /// </summary>
-        [DataMember]
-        public string Doctype { set; get; }
-        /// <summary>
-        /// Estado del inventario
-        /// </summary>
-        [DataMember]
-        public string invntsttus { set; get; }
-        /// <summary>
-        /// El documento esta cancelado (true = si)
-        /// </summary>
-        [DataMember]
-        public bool Canceled { set; get; }
-        /// <summary>
-        /// Fecha de la ultima actualizacion
-        /// </summary>
-        [DataMember]
-        public DateTime UpdateDate { set; get; }
-        /// <summary>
-        /// Líneas de Documentos
-        /// </summary>
-        [DataMember]
-        public List<MarketingDocumentLine> lines { set; get; }
-        /// <summary>
-        /// Tipo de objeto (13- Facturas, 22 - órdenes de compra, 17 - Órdenes de venta)
-        /// </summary>
-        [DataMember]
-        public string Objtype { set; get; }
+        public string cardCode { set; get; }
 
         [DataMember]
-        public List<UserDefinedField> UserDefinedFields { get; set; }
+        public DateTime docDate { set; get; }
+
+        [DataMember]
+        public DateTime docDueDate { set; get; }
+
+        [DataMember]
+        public DateTime taxDate { set; get; }
+
+        [DataMember]
+        public string cardName { set; get; }
+        
+        [DataMember]
+        public string numAtCard { set; get; }                
+        
+        [DataMember]
+        public string docStatus { set; get; }
+        
+        [DataMember]
+        public string doctype { set; get; }
+        
+        [DataMember]
+        public string invntsttus { set; get; }
+        
+        [DataMember]
+        public bool canceled { set; get; }
+        
+        [DataMember]
+        public DateTime updateDate { set; get; }               
+        
+        [DataMember]
+        public string objtype { set; get; }
+
+        [DataMember]
+        public string shipToCode { get; set; }
+
+        [DataMember]
+        public string payToCode { get; set; }
+
+        [DataMember]
+        public int? groupNum { get; set; }
+
+        [DataMember]
+        public string comments { get; set; }
+
+        [DataMember]
+        public int? slpCode { get; set; }
+
+        [DataMember]
+        public List<MarketingDocumentLine> lines { set; get; }
+
+        [DataMember]
+        public List<UserDefinedField> userDefinedFields { get; set; }
         #endregion
         #region Constructor
         /// <summary>
@@ -105,19 +87,19 @@ namespace Orkidea.Framework.SAP.BusinessOne.Entities.MarketingDocuments
         /// </summary>
         public MarketingDocument()
         {
-            this.Canceled = false;
-            this.CardCode = "";
-            this.CardName = "";
-            this.DocDate = DateTime.Now;
-            this.DocEntry = 0;
-            this.DocNum = 0;
-            this.DocStatus = "";
+            this.canceled = false;
+            this.cardCode = "";
+            this.cardName = "";
+            this.docDate = DateTime.Now;
+            this.docEntry = 0;
+            this.docNum = 0;
+            this.docStatus = "";
             this.lines = new List<MarketingDocumentLine>();
-            this.NumAtCard = "";
+            this.numAtCard = "";
             this.invntsttus = "";
-            this.Doctype = "";
-            this.Objtype = "";
-            this.UserDefinedFields = new List<UserDefinedField>();
+            this.doctype = "";
+            this.objtype = "";
+            this.userDefinedFields = new List<UserDefinedField>();
         }
         #endregion
     }

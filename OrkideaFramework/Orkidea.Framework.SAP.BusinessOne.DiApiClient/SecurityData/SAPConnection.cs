@@ -30,7 +30,7 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient.SecurityData
         /// <summary>
         /// Constructor Privado para implementar el patron Singleton
         /// </summary>
-        private SAPConnection(string dataBase, string licenceServer, string DatabaseServer, string user, string password, string userBd, string passwordBD, string serverType)
+        public SAPConnection(string dataBase, string licenceServer, string DatabaseServer, string user, string password, string userBd, string passwordBD, string serverType)
         {
             company = new Company();
             company.CompanyDB = dataBase;
@@ -73,11 +73,16 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient.SecurityData
                 {
                     if (Conn == null)
                     {
-                        Conn = new SAPConnection(ConfigurationManager.AppSettings["DataBase"],
-                            ConfigurationManager.AppSettings["LicenceServer"], ConfigurationManager.AppSettings["DataBaseServer"],
-                            ConfigurationManager.AppSettings["UserSAP"], ConfigurationManager.AppSettings["PasswordSAP"],
-                            ConfigurationManager.AppSettings["UserBD"], ConfigurationManager.AppSettings["PasswordBD"],
-                            ConfigurationManager.AppSettings["ServerType"]);
+                        Conn = new SAPConnection(
+                            ConfigurationManager.AppSettings["DataBase"],
+                            ConfigurationManager.AppSettings["LicenceServer"], 
+                            ConfigurationManager.AppSettings["DataBaseServer"],
+                            ConfigurationManager.AppSettings["UserSAP"], 
+                            ConfigurationManager.AppSettings["PasswordSAP"],
+                            ConfigurationManager.AppSettings["UserBD"], 
+                            ConfigurationManager.AppSettings["PasswordBD"],
+                            ConfigurationManager.AppSettings["ServerType"]
+                            );
                     }
                     return Conn;
                 }

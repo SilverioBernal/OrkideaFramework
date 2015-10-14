@@ -8,6 +8,6 @@ namespace Orkidea.Framework.SAP.BusinessOne.Entities.Global.UserDefinedFileds
 {
     public enum UdfType
     {
-        Alphanumeric, Numeric, Datetime
+        Alphanumeric, Numeric, Datetime, Price, Text
     }
 }

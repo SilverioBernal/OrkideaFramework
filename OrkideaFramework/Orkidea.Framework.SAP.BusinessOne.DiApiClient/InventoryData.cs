@@ -31,23 +31,28 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
         {
             this.dataBase = DatabaseFactory.CreateDatabase("SAP");
         }
+
+        public InventoryData(string connStringName)
+        {
+            this.dataBase = DatabaseFactory.CreateDatabase(connStringName);
+        }
         #endregion
 
         #region Métodos
-        public List<Item> GetItemAll()
+        public List<GenericItem> GetItemAll()
         {
             StringBuilder oSQL = new StringBuilder();
             oSQL.Append("SELECT ItemCode, ItemName FROM OITM T0 ");
 
             DbCommand dbCommand = this.dataBase.GetSqlStringCommand(oSQL.ToString());
 
-            List<Item> items = new List<Item>();
+            List<GenericItem> items = new List<GenericItem>();
 
             using (this.reader = this.dataBase.ExecuteReader(dbCommand))
             {
                 while (this.reader.Read())
                 {
-                    Item item = new Item();
+                    GenericItem item = new GenericItem();
                     item.ItemCode = this.reader.IsDBNull(0) ? "" : this.reader.GetValue(0).ToString();
                     item.ItemName = this.reader.IsDBNull(1) ? "" : this.reader.GetValue(1).ToString();
 
@@ -57,7 +62,7 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
             return items;
         }
 
-        public List<Item> GetItemList(Warehouse warehouse)
+        public List<GenericItem> GetItemList(Warehouse warehouse)
         {
             StringBuilder oSQL = new StringBuilder();
             oSQL.Append("SELECT T0.ItemCode, T0.ItemName ");            
@@ -69,13 +74,13 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
             DbCommand dbCommand = this.dataBase.GetSqlStringCommand(oSQL.ToString());
             this.dataBase.AddInParameter(dbCommand, "warehouse", DbType.String, warehouse.WhsCode);
 
-            List<Item> items = new List<Item>();
+            List<GenericItem> items = new List<GenericItem>();
 
             using (this.reader = this.dataBase.ExecuteReader(dbCommand))
             {
                 while (this.reader.Read())
                 {
-                    Item item = new Item();
+                    GenericItem item = new GenericItem();
                     item.ItemCode = this.reader.IsDBNull(0) ? "" : this.reader.GetValue(0).ToString();
                     item.ItemName = this.reader.IsDBNull(1) ? "" : this.reader.GetValue(1).ToString();
 
@@ -85,14 +90,57 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
             return items;
         }
 
+        public Item GetSingle(string itemCode)
+        {
+            StringBuilder oSQL = new StringBuilder();
+            oSQL.Append("SELECT T0.ItemCode, ItemName ");
+            oSQL.Append("FROM OITM T0 ");            
+            oSQL.Append(string.Format("where T0.ItemCode = '{0}'", itemCode));
+
+            DbCommand dbCommand = this.dataBase.GetSqlStringCommand(oSQL.ToString());
+
+            Item item = new Item();
+
+            using (this.reader = this.dataBase.ExecuteReader(dbCommand))
+            {
+                while (this.reader.Read())
+                {                    
+                    item.ItemCode = this.reader.IsDBNull(0) ? "" : this.reader.GetValue(0).ToString();
+                    item.ItemName = this.reader.IsDBNull(1) ? "" : this.reader.GetValue(1).ToString();                    
+                }
+            }
+            return item;
+        }
+
+        public double GetItemPrice(string itemCode, int priceList)
+        {
+            StringBuilder oSQL = new StringBuilder();
+            oSQL.Append("SELECT price ");
+            oSQL.Append("FROM ITM1 ");
+            oSQL.Append(string.Format("where ItemCode = '{0}' and PriceList = {1}", itemCode, priceList));
+
+            DbCommand dbCommand = this.dataBase.GetSqlStringCommand(oSQL.ToString());
+
+            double price = 0;
+
+            using (this.reader = this.dataBase.ExecuteReader(dbCommand))
+            {
+                while (this.reader.Read())
+                {
+                    price = this.reader.IsDBNull(0) ? 0 : double.Parse( this.reader.GetValue(0).ToString());                    
+                }
+            }
+            return price;
+        }
+
         public List<StockLevel> GetItemStockLevel(string itemCode)
         {
 
             {
                 StringBuilder oSQL = new StringBuilder();
                 oSQL.Append("select T0.WhsCode, T1.WhsName, OnHand, IsCommited, OnOrder, OnHand + OnOrder - IsCommited IsAvailable ");
-                oSQL.Append("From OITW T0 inner join OWHS T1 on T0.WhsCode = T1.WhsCode ");                
-                oSQL.Append("where ItemCode = @itemCode");                
+                oSQL.Append("From OITW T0 inner join OWHS T1 on T0.WhsCode = T1.WhsCode ");
+                oSQL.Append("where ItemCode = @itemCode and (OnHand > 0 or OnOrder > 0)");                
 
                 DbCommand dbCommand = this.dataBase.GetSqlStringCommand(oSQL.ToString());
                 this.dataBase.AddInParameter(dbCommand, "itemCode", DbType.String, itemCode);

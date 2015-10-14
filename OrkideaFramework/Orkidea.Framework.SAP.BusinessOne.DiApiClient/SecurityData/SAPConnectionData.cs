@@ -24,6 +24,11 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient.SecurityData
         {
             Conn = SAPConnection.conn;
         }
+
+        public SAPConnectionData(string dataBase, string licenceServer, string DatabaseServer, string user, string password, string userBd, string passwordBD, string serverType)
+        {
+            Conn = new SAPConnection(dataBase, licenceServer, DatabaseServer, user, password, userBd, passwordBD, serverType);
+        }
         #endregion
 
         #region Methods

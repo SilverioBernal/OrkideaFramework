@@ -1,5 +1,7 @@
 ﻿using Microsoft.Practices.EnterpriseLibrary.Data;
 using Orkidea.Framework.SAP.BusinessOne.DiApiClient.SecurityData;
+using Orkidea.Framework.SAP.BusinessOne.Entities.Global.Administration;
+using Orkidea.Framework.SAP.BusinessOne.Entities.Global.ExceptionManagement;
 using Orkidea.Framework.SAP.BusinessOne.Entities.Global.UserDefinedFileds;
 using Orkidea.Framework.SAP.BusinessOne.Entities.Inventory;
 using Orkidea.Framework.SAP.BusinessOne.Entities.MarketingDocuments;
@@ -16,7 +18,7 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
 {
     public class MarketingDocumentData
     {
-        #region Atributos
+        #region Fields
         /// <summary>
         /// Atributos de conexión a la base de datos
         /// </summary>
@@ -35,16 +37,21 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
         {
             this.dataBase = DatabaseFactory.CreateDatabase("SAP");
         }
+
+        public MarketingDocumentData(string connStringName)
+        {
+            this.dataBase = DatabaseFactory.CreateDatabase(connStringName);
+        }
         #endregion
 
-        #region Métodos
-        public List<MarketingDocument> GetList(MktgDocType mktgDocType, DateTime startDate, DateTime endDate)
+        #region Methods
+        public List<MarketingDocument> GetList(SapDocumentType mktgDocType, DateTime startDate, DateTime endDate)
         {
             StringBuilder oSQL = new StringBuilder();
 
             switch (mktgDocType)
             {
-                case MktgDocType.PurchaseOrder:
+                case SapDocumentType.PurchaseOrder:
                     oSQL.Append("SELECT  T0.DocEntry, DocNum, CardCode, CardName, NumAtCard, T0.DocDate, DocStatus, Canceled, ");
                     oSQL.Append("ItemCode, Quantity, T1.WhsCode, WhsName, Dscription, LineStatus, T0.Doctype, T0.invntsttus, ");
                     oSQL.Append("T1.OpenCreQty, T1.OpenQty, T1.unitMsr, T1.NumPerMsr, T1.TargetType, T1.TrgetEntry, T1.LineNum, ");
@@ -56,13 +63,13 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
                     oSQL.Append("ON T1.WhsCode = T2.WhsCode ");
                     oSQL.Append("Where T0.DocDate between @starDate and @endDate");
                     break;
-                case MktgDocType.Invoice:
+                case SapDocumentType.SalesInvoice:
                     break;
-                case MktgDocType.Delivery:
+                case SapDocumentType.SalesDelivery:
                     break;
-                case MktgDocType.CreditNote:
+                case SapDocumentType.SalesCreditNote:
                     break;
-                case MktgDocType.DebitNote:
+                case SapDocumentType.PurchaseCreditNote:
                     break;
                 default:
                     break;
@@ -81,49 +88,49 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
             {
                 while (this.reader.Read())
                 {
-                    if (document.DocEntry == 0 || Convert.ToInt32(this.reader.GetValue(0).ToString()) != DocEntryTemporal)
+                    if (document.docEntry == 0 || Convert.ToInt32(this.reader.GetValue(0).ToString()) != DocEntryTemporal)
                     {
-                        if (document.DocEntry != 0)
+                        if (document.docEntry != 0)
                             documentList.Add(document);
 
                         document = new MarketingDocument();
-                        document.DocEntry = this.reader.IsDBNull(0) ? 0 : Convert.ToInt32(this.reader.GetValue(0).ToString());
-                        document.DocNum = this.reader.IsDBNull(1) ? 0 : Convert.ToInt32(this.reader.GetValue(1).ToString());
-                        document.CardCode = this.reader.IsDBNull(2) ? "" : this.reader.GetValue(2).ToString();
-                        document.CardName = this.reader.IsDBNull(3) ? "" : this.reader.GetValue(3).ToString();
-                        document.NumAtCard = this.reader.IsDBNull(4) ? "" : this.reader.GetValue(4).ToString();
-                        document.DocDate = this.reader.IsDBNull(5) ? DateTime.Now : Convert.ToDateTime(this.reader.GetValue(5).ToString());
-                        document.DocStatus = this.reader.IsDBNull(6) ? "" : this.reader.GetValue(6).ToString();
-                        document.Doctype = this.reader.IsDBNull(14) ? "" : this.reader.GetValue(14).ToString();
+                        document.docEntry = this.reader.IsDBNull(0) ? 0 : Convert.ToInt32(this.reader.GetValue(0).ToString());
+                        document.docNum = this.reader.IsDBNull(1) ? 0 : Convert.ToInt32(this.reader.GetValue(1).ToString());
+                        document.cardCode = this.reader.IsDBNull(2) ? "" : this.reader.GetValue(2).ToString();
+                        document.cardName = this.reader.IsDBNull(3) ? "" : this.reader.GetValue(3).ToString();
+                        document.numAtCard = this.reader.IsDBNull(4) ? "" : this.reader.GetValue(4).ToString();
+                        document.docDate = this.reader.IsDBNull(5) ? DateTime.Now : Convert.ToDateTime(this.reader.GetValue(5).ToString());
+                        document.docStatus = this.reader.IsDBNull(6) ? "" : this.reader.GetValue(6).ToString();
+                        document.doctype = this.reader.IsDBNull(14) ? "" : this.reader.GetValue(14).ToString();
                         document.invntsttus = this.reader.IsDBNull(15) ? "" : this.reader.GetValue(15).ToString();
-                        document.Objtype = this.reader.IsDBNull(23) ? "" : this.reader.GetValue(23).ToString();
-                        document.UpdateDate = this.reader.IsDBNull(24) ? DateTime.Now : Convert.ToDateTime(this.reader.GetValue(24).ToString());
+                        document.objtype = this.reader.IsDBNull(23) ? "" : this.reader.GetValue(23).ToString();
+                        document.updateDate = this.reader.IsDBNull(24) ? DateTime.Now : Convert.ToDateTime(this.reader.GetValue(24).ToString());
 
                         if (this.reader.GetValue(7).ToString().Equals("Y"))
-                            document.Canceled = true;
+                            document.canceled = true;
                         else
-                            document.Canceled = false;
-                        DocEntryTemporal = document.DocEntry;
+                            document.canceled = false;
+                        DocEntryTemporal = document.docEntry;
                     }
                     MarketingDocumentLine linea = new MarketingDocumentLine();
-                    linea.ItemCode = this.reader.IsDBNull(8) ? "" : this.reader.GetValue(8).ToString();
-                    linea.Quantity = this.reader.IsDBNull(9) ? 0 : Convert.ToDouble(this.reader.GetValue(9).ToString());
-                    linea.WhsCode = this.reader.IsDBNull(10) ? "" : this.reader.GetValue(10).ToString();
-                    linea.WhsName = this.reader.IsDBNull(11) ? "" : this.reader.GetValue(11).ToString();
-                    linea.Dscription = this.reader.IsDBNull(12) ? "" : this.reader.GetValue(12).ToString();
-                    linea.LineStatus = this.reader.IsDBNull(13) ? "" : this.reader.GetValue(13).ToString();
-                    linea.OpenCreQty = this.reader.IsDBNull(16) ? 0 : Convert.ToDouble(this.reader.GetValue(16).ToString());
-                    linea.OpenQty = this.reader.IsDBNull(17) ? 0 : Convert.ToDouble(this.reader.GetValue(17).ToString());
+                    linea.itemCode = this.reader.IsDBNull(8) ? "" : this.reader.GetValue(8).ToString();
+                    linea.quantity = this.reader.IsDBNull(9) ? 0 : Convert.ToDouble(this.reader.GetValue(9).ToString());
+                    linea.whsCode = this.reader.IsDBNull(10) ? "" : this.reader.GetValue(10).ToString();
+                    linea.whsName = this.reader.IsDBNull(11) ? "" : this.reader.GetValue(11).ToString();
+                    linea.dscription = this.reader.IsDBNull(12) ? "" : this.reader.GetValue(12).ToString();
+                    linea.lineStatus = this.reader.IsDBNull(13) ? "" : this.reader.GetValue(13).ToString();
+                    linea.openCreQty = this.reader.IsDBNull(16) ? 0 : Convert.ToDouble(this.reader.GetValue(16).ToString());
+                    linea.openQty = this.reader.IsDBNull(17) ? 0 : Convert.ToDouble(this.reader.GetValue(17).ToString());
                     linea.unitMsr = this.reader.IsDBNull(18) ? "" : this.reader.GetValue(18).ToString();
-                    linea.NumPerMsr = this.reader.IsDBNull(19) ? 0 : Convert.ToDouble(this.reader.GetValue(19).ToString());
-                    linea.TargetType = this.reader.IsDBNull(20) ? 0 : Convert.ToInt32(this.reader.GetValue(20).ToString());
-                    linea.TrgetEntry = this.reader.IsDBNull(21) ? 0 : Convert.ToInt32(this.reader.GetValue(21).ToString());
-                    linea.LineNum = this.reader.IsDBNull(22) ? 0 : Convert.ToInt32(this.reader.GetValue(22).ToString());
+                    linea.numPerMsr = this.reader.IsDBNull(19) ? 0 : Convert.ToDouble(this.reader.GetValue(19).ToString());
+                    linea.targetType = this.reader.IsDBNull(20) ? 0 : Convert.ToInt32(this.reader.GetValue(20).ToString());
+                    linea.trgetEntry = this.reader.IsDBNull(21) ? 0 : Convert.ToInt32(this.reader.GetValue(21).ToString());
+                    linea.lineNum = this.reader.IsDBNull(22) ? 0 : Convert.ToInt32(this.reader.GetValue(22).ToString());
 
                     document.lines.Add(linea);
                     contadorLineas++;
                 }
-                if (document.DocEntry != 0)
+                if (document.docEntry != 0)
                     documentList.Add(document);
             }
             return documentList;
@@ -134,14 +141,14 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
         /// </summary>
         /// <param name="cardCode">Codigo de socio de negocio</param>
         /// <returns>Socio con la información</returns>
-        public MarketingDocument GetSingle(MktgDocType mktgDocType, string docNum)
+        public MarketingDocument GetSingle(SapDocumentType mktgDocType, string docNum)
         {
             StringBuilder oSQL = new StringBuilder();
             MarketingDocument document = new MarketingDocument();
 
             switch (mktgDocType)
             {
-                case MktgDocType.PurchaseOrder:
+                case SapDocumentType.PurchaseOrder:
                     oSQL.Append("SELECT  T0.DocEntry, DocNum, CardCode, CardName, NumAtCard, T0.DocDate, DocStatus, Canceled, ");
                     oSQL.Append("ItemCode, Quantity, T1.WhsCode, WhsName, Dscription, LineStatus, T0.Doctype, T0.invntsttus, ");
                     oSQL.Append("T1.OpenCreQty, T1.OpenQty, T1.unitMsr, T1.NumPerMsr, T1.TargetType, T1.TrgetEntry, T1.LineNum, T0.ObjType, T0.UpdateDate ");
@@ -159,51 +166,51 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
                     {
                         while (this.reader.Read())
                         {
-                            if (document.DocEntry == 0)
+                            if (document.docEntry == 0)
                             {
-                                document.DocEntry = this.reader.IsDBNull(0) ? 0 : Convert.ToInt32(this.reader.GetValue(0).ToString());
-                                document.DocNum = this.reader.IsDBNull(1) ? 0 : Convert.ToInt32(this.reader.GetValue(1).ToString());
-                                document.CardCode = this.reader.IsDBNull(2) ? "" : this.reader.GetValue(2).ToString();
-                                document.CardName = this.reader.IsDBNull(3) ? "" : this.reader.GetValue(3).ToString();
-                                document.NumAtCard = this.reader.IsDBNull(4) ? "" : this.reader.GetValue(4).ToString();
-                                document.DocDate = this.reader.IsDBNull(5) ? DateTime.Now : Convert.ToDateTime(this.reader.GetValue(5).ToString());
-                                document.DocStatus = this.reader.IsDBNull(6) ? "" : this.reader.GetValue(6).ToString();
-                                document.Doctype = this.reader.IsDBNull(14) ? "" : this.reader.GetValue(14).ToString();
+                                document.docEntry = this.reader.IsDBNull(0) ? 0 : Convert.ToInt32(this.reader.GetValue(0).ToString());
+                                document.docNum = this.reader.IsDBNull(1) ? 0 : Convert.ToInt32(this.reader.GetValue(1).ToString());
+                                document.cardCode = this.reader.IsDBNull(2) ? "" : this.reader.GetValue(2).ToString();
+                                document.cardName = this.reader.IsDBNull(3) ? "" : this.reader.GetValue(3).ToString();
+                                document.numAtCard = this.reader.IsDBNull(4) ? "" : this.reader.GetValue(4).ToString();
+                                document.docDate = this.reader.IsDBNull(5) ? DateTime.Now : Convert.ToDateTime(this.reader.GetValue(5).ToString());
+                                document.docStatus = this.reader.IsDBNull(6) ? "" : this.reader.GetValue(6).ToString();
+                                document.doctype = this.reader.IsDBNull(14) ? "" : this.reader.GetValue(14).ToString();
                                 document.invntsttus = this.reader.IsDBNull(15) ? "" : this.reader.GetValue(15).ToString();
-                                document.Objtype = this.reader.IsDBNull(23) ? "" : this.reader.GetValue(23).ToString();
-                                document.UpdateDate = this.reader.IsDBNull(24) ? DateTime.Now : Convert.ToDateTime(this.reader.GetValue(24).ToString());
+                                document.objtype = this.reader.IsDBNull(23) ? "" : this.reader.GetValue(23).ToString();
+                                document.updateDate = this.reader.IsDBNull(24) ? DateTime.Now : Convert.ToDateTime(this.reader.GetValue(24).ToString());
 
                                 if (this.reader.GetValue(7).ToString().Equals("Y"))
-                                    document.Canceled = true;
+                                    document.canceled = true;
                                 else
-                                    document.Canceled = false;
+                                    document.canceled = false;
                             }
                             MarketingDocumentLine line = new MarketingDocumentLine();
-                            line.ItemCode = this.reader.IsDBNull(8) ? "" : this.reader.GetValue(8).ToString();
-                            line.Quantity = this.reader.IsDBNull(9) ? 0 : Convert.ToDouble(this.reader.GetValue(9).ToString());
-                            line.WhsCode = this.reader.IsDBNull(10) ? "" : this.reader.GetValue(10).ToString();
-                            line.WhsName = this.reader.IsDBNull(11) ? "" : this.reader.GetValue(11).ToString();
-                            line.Dscription = this.reader.IsDBNull(12) ? "" : this.reader.GetValue(12).ToString();
-                            line.LineStatus = this.reader.IsDBNull(13) ? "" : this.reader.GetValue(13).ToString();
-                            line.OpenCreQty = this.reader.IsDBNull(16) ? 0 : Convert.ToDouble(this.reader.GetValue(16).ToString());
-                            line.OpenQty = this.reader.IsDBNull(17) ? 0 : Convert.ToDouble(this.reader.GetValue(17).ToString());
+                            line.itemCode = this.reader.IsDBNull(8) ? "" : this.reader.GetValue(8).ToString();
+                            line.quantity = this.reader.IsDBNull(9) ? 0 : Convert.ToDouble(this.reader.GetValue(9).ToString());
+                            line.whsCode = this.reader.IsDBNull(10) ? "" : this.reader.GetValue(10).ToString();
+                            line.whsName = this.reader.IsDBNull(11) ? "" : this.reader.GetValue(11).ToString();
+                            line.dscription = this.reader.IsDBNull(12) ? "" : this.reader.GetValue(12).ToString();
+                            line.lineStatus = this.reader.IsDBNull(13) ? "" : this.reader.GetValue(13).ToString();
+                            line.openCreQty = this.reader.IsDBNull(16) ? 0 : Convert.ToDouble(this.reader.GetValue(16).ToString());
+                            line.openQty = this.reader.IsDBNull(17) ? 0 : Convert.ToDouble(this.reader.GetValue(17).ToString());
                             line.unitMsr = this.reader.IsDBNull(18) ? "" : this.reader.GetValue(18).ToString();
-                            line.NumPerMsr = this.reader.IsDBNull(19) ? 0 : Convert.ToDouble(this.reader.GetValue(19).ToString());
-                            line.TargetType = this.reader.IsDBNull(20) ? 0 : Convert.ToInt32(this.reader.GetValue(20).ToString());
-                            line.TrgetEntry = this.reader.IsDBNull(21) ? 0 : Convert.ToInt32(this.reader.GetValue(21).ToString());
-                            line.LineNum = this.reader.IsDBNull(22) ? 0 : Convert.ToInt32(this.reader.GetValue(22).ToString());
+                            line.numPerMsr = this.reader.IsDBNull(19) ? 0 : Convert.ToDouble(this.reader.GetValue(19).ToString());
+                            line.targetType = this.reader.IsDBNull(20) ? 0 : Convert.ToInt32(this.reader.GetValue(20).ToString());
+                            line.trgetEntry = this.reader.IsDBNull(21) ? 0 : Convert.ToInt32(this.reader.GetValue(21).ToString());
+                            line.lineNum = this.reader.IsDBNull(22) ? 0 : Convert.ToInt32(this.reader.GetValue(22).ToString());
 
                             document.lines.Add(line);
                         }
                     }
                     break;
-                case MktgDocType.Invoice:
+                case SapDocumentType.SalesInvoice:
                     break;
-                case MktgDocType.Delivery:
+                case SapDocumentType.SalesDelivery:
                     break;
-                case MktgDocType.CreditNote:
+                case SapDocumentType.SalesCreditNote:
                     break;
-                case MktgDocType.DebitNote:
+                case SapDocumentType.PurchaseCreditNote:
                     break;
                 default:
                     break;
@@ -216,49 +223,66 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
         /// Método para la creacion de socios de negocio en SAP
         /// </summary>
         /// <param name="document"></param>
-        public void Add(MktgDocType mktgDocType, MarketingDocument document)
+        public MarketingDocument Add(SapDocumentType mktgDocType, MarketingDocument document)
         {
             Documents doc = null;
 
             #region Document definition
             switch (mktgDocType)
             {
-                case MktgDocType.PurchaseOrder:
+                case SapDocumentType.PurchaseOrder:
                     doc = (Documents)SAPConnection.conn.company.GetBusinessObject(BoObjectTypes.oPurchaseOrders);
                     break;
-                case MktgDocType.Invoice:
+                case SapDocumentType.SalesOrder:
+                    doc = (Documents)SAPConnection.conn.company.GetBusinessObject(BoObjectTypes.oOrders);
+                    break;
+                case SapDocumentType.SalesInvoice:
                     doc = (Documents)SAPConnection.conn.company.GetBusinessObject(BoObjectTypes.oInvoices);
                     break;
-                case MktgDocType.Delivery:
+                case SapDocumentType.SalesDelivery:
                     doc = doc = (Documents)SAPConnection.conn.company.GetBusinessObject(BoObjectTypes.oDeliveryNotes);
                     break;
-                case MktgDocType.CreditNote:
+                case SapDocumentType.SalesCreditNote:
                     doc = doc = (Documents)SAPConnection.conn.company.GetBusinessObject(BoObjectTypes.oCreditNotes);
                     break;
             }
             #endregion
 
-            #region Document header
-            doc.DocDate = document.DocDate;
-            doc.DocDueDate = document.DocDate;
-            doc.TaxDate = document.DocDate;
-            doc.CardCode = document.CardCode;
+            #region Document header            
+            doc.Series = document.serie;
+            doc.CardCode = document.cardCode;
+            doc.DocDate = document.docDate;
+            doc.DocDueDate = document.docDate;
+            doc.TaxDate = document.docDate;
 
-            if (!string.IsNullOrEmpty(document.NumAtCard))
-                doc.NumAtCard = document.NumAtCard;
+            if (!string.IsNullOrEmpty(document.numAtCard))
+                doc.NumAtCard = document.numAtCard;
 
-            #region Header UDF
-            foreach (UserDefinedField udf in document.UserDefinedFields)
+            #region UDF's
+            foreach (UserDefinedField item in document.userDefinedFields)
             {
-                if (udf.type == UdfType.Alphanumeric)
-                    doc.UserFields.Fields.Item(udf.name).Value = udf.value;
-
-                if (udf.type == UdfType.Numeric)
-                    doc.UserFields.Fields.Item(udf.name).Value = decimal.Parse(udf.value);
-
-                if (udf.type == UdfType.Datetime)
-                    doc.UserFields.Fields.Item(udf.name).Value = DateTime.Parse(udf.value);
-            }
+                if (!string.IsNullOrEmpty(item.value))
+                    switch (item.type)
+                    {
+                        case UdfType.Alphanumeric:
+                            doc.UserFields.Fields.Item(item.name).Value = item.value;
+                            break;
+                        case UdfType.Numeric:
+                            doc.UserFields.Fields.Item(item.name).Value = double.Parse(item.value);
+                            break;
+                        case UdfType.Datetime:
+                            doc.UserFields.Fields.Item(item.name).Value = DateTime.Parse(item.value);
+                            break;
+                        case UdfType.Price:
+                            doc.UserFields.Fields.Item(item.name).Value = double.Parse(item.value);
+                            break;
+                        case UdfType.Text:
+                            doc.UserFields.Fields.Item(item.name).Value = item.value;
+                            break;
+                        default:
+                            break;
+                    }
+            }                                             
             #endregion
 
             #endregion
@@ -266,42 +290,58 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
             #region Document lines
             foreach (MarketingDocumentLine line in document.lines)
             {
-                if (line.BaseType != 202)
-                    doc.Lines.ItemCode = line.ItemCode;
+                if (line.baseType != 202)
+                    doc.Lines.ItemCode = line.itemCode;
 
-                doc.Lines.Quantity = line.Quantity;
-                doc.Lines.WarehouseCode = line.WhsCode;
-
+                doc.Lines.Quantity = line.quantity;
+                doc.Lines.WarehouseCode = line.whsCode;
+                if (line.price != 0)
+                    doc.Lines.Price = line.price;
                 if (!string.IsNullOrEmpty(line.unitMsr))
                     doc.Lines.MeasureUnit = line.unitMsr;
-
-                if (line.NumPerMsr != 0)
-                    doc.Lines.UnitsOfMeasurment = line.NumPerMsr;
-
-                if (line.BaseEntry != 0)
+                if (!string.IsNullOrEmpty(line.taxCode))
+                    doc.Lines.TaxCode = line.taxCode;
+                if (!string.IsNullOrEmpty(line.ocrCode))
+                    doc.Lines.CostingCode = line.ocrCode;
+                if (line.numPerMsr != 0)
+                    doc.Lines.UnitsOfMeasurment = line.numPerMsr;
+                if (line.baseEntry != 0)
                 {
-                    doc.Lines.BaseEntry = line.BaseEntry;
-                    doc.Lines.BaseLine = line.BaseLine;
-                    doc.Lines.BaseType = line.BaseType;
+                    doc.Lines.BaseEntry = line.baseEntry;
+                    doc.Lines.BaseLine = line.baseLine;
+                    doc.Lines.BaseType = line.baseType;
                 }
 
-                #region Line UDF
-                foreach (UserDefinedField udf in line.UserDefinedFields)
+                #region UDF's
+                foreach (UserDefinedField item in line.userDefinedFields)
                 {
-                    if (udf.type == UdfType.Alphanumeric)
-                        doc.Lines.UserFields.Fields.Item(udf.name).Value = udf.value;
-
-                    if (udf.type == UdfType.Numeric)
-                        doc.Lines.UserFields.Fields.Item(udf.name).Value = decimal.Parse(udf.value);
-
-                    if (udf.type == UdfType.Datetime)
-                        doc.Lines.UserFields.Fields.Item(udf.name).Value = DateTime.Parse(udf.value);
+                    if (!string.IsNullOrEmpty(item.value))
+                        switch (item.type)
+                        {
+                            case UdfType.Alphanumeric:
+                                doc.Lines.UserFields.Fields.Item(item.name).Value = item.value;
+                                break;
+                            case UdfType.Numeric:
+                                doc.Lines.UserFields.Fields.Item(item.name).Value = double.Parse(item.value);
+                                break;
+                            case UdfType.Datetime:
+                                doc.Lines.UserFields.Fields.Item(item.name).Value = DateTime.Parse(item.value);
+                                break;
+                            case UdfType.Price:
+                                doc.Lines.UserFields.Fields.Item(item.name).Value = double.Parse(item.value);
+                                break;
+                            case UdfType.Text:
+                                doc.Lines.UserFields.Fields.Item(item.name).Value = item.value;
+                                break;
+                            default:
+                                break;
+                        }
                 }
                 #endregion
 
                 #region Batchs
-                if (line.BatchNumbers != null)
-                    foreach (BatchNumber batchNumber in line.BatchNumbers)
+                if (line.batchNumbers != null)
+                    foreach (BatchNumber batchNumber in line.batchNumbers)
                     {
                         doc.Lines.BatchNumbers.BatchNumber = batchNumber.DistNumber;
                         doc.Lines.BatchNumbers.Quantity = batchNumber.Quantity;
@@ -311,8 +351,8 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
                 #endregion
 
                 #region Series
-                if (line.SerialNumbers != null)
-                    foreach (SerialNumber serie in line.SerialNumbers)
+                if (line.serialNumbers != null)
+                    foreach (SerialNumber serie in line.serialNumbers)
                     {
 
                         doc.Lines.SerialNumbers.InternalSerialNumber = serie.DisNumber;
@@ -322,6 +362,176 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
                 #endregion
             }
             #endregion
+
+            if (doc.Add() != 0)
+            {
+                throw new SAPException(SAPConnection.conn.company.GetLastErrorCode(), SAPConnection.conn.company.GetLastErrorDescription());
+            }
+            document.docEntry = Convert.ToInt32(SAPConnection.conn.company.GetNewObjectKey());
+            return document;
+        }
+
+        public MarketingDocument Add(SapDocumentType mktgDocType, MarketingDocument document, SAPConnection sapConn)
+        {
+            Documents doc = null;
+
+            #region Document definition
+            switch (mktgDocType)
+            {
+                case SapDocumentType.PurchaseOrder:
+                    doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oPurchaseOrders);
+                    break;
+                case SapDocumentType.SalesOrder:
+                    doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oOrders);
+                    break;
+                case SapDocumentType.SalesInvoice:
+                    doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oInvoices);
+                    break;
+                case SapDocumentType.SalesDelivery:
+                    doc = doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oDeliveryNotes);
+                    break;
+                case SapDocumentType.SalesCreditNote:
+                    doc = doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oCreditNotes);
+                    break;
+            }
+            #endregion
+
+            #region Document header
+            doc.Series = document.serie;
+            doc.CardCode = document.cardCode;
+            doc.DocDate = document.docDate;
+            doc.DocDueDate = document.docDate;
+            doc.TaxDate = document.docDate;
+
+            if (!string.IsNullOrEmpty(document.numAtCard))
+                doc.NumAtCard = document.numAtCard;
+
+            if (!string.IsNullOrEmpty(document.shipToCode))
+                doc.ShipToCode = document.shipToCode;
+
+            if (!string.IsNullOrEmpty(document.payToCode))
+                doc.PayToCode= document.payToCode;
+
+            if (document.groupNum!= null)
+                doc.GroupNumber = (int)document.groupNum;
+
+            if (!string.IsNullOrEmpty(document.comments))
+                doc.Comments = document.comments;
+
+            if (document.slpCode!=null)
+                doc.SalesPersonCode = (int)document.slpCode;
+
+            #region UDF's
+            foreach (UserDefinedField item in document.userDefinedFields)
+            {
+                if (!string.IsNullOrEmpty(item.value))
+                    switch (item.type)
+                    {
+                        case UdfType.Alphanumeric:
+                            doc.UserFields.Fields.Item(item.name).Value = item.value;
+                            break;
+                        case UdfType.Numeric:
+                            doc.UserFields.Fields.Item(item.name).Value = double.Parse(item.value);
+                            break;
+                        case UdfType.Datetime:
+                            doc.UserFields.Fields.Item(item.name).Value = DateTime.Parse(item.value);
+                            break;
+                        case UdfType.Price:
+                            doc.UserFields.Fields.Item(item.name).Value = double.Parse(item.value);
+                            break;
+                        case UdfType.Text:
+                            doc.UserFields.Fields.Item(item.name).Value = item.value;
+                            break;
+                        default:
+                            break;
+                    }
+            }
+            #endregion
+
+            #endregion
+
+            #region Document lines
+            foreach (MarketingDocumentLine line in document.lines)
+            {
+                if (line.baseType != 202)
+                    doc.Lines.ItemCode = line.itemCode;
+
+                doc.Lines.Quantity = line.quantity;
+                doc.Lines.WarehouseCode = line.whsCode;
+                if (line.price != 0)
+                    doc.Lines.Price = line.price;
+                if (!string.IsNullOrEmpty(line.unitMsr))
+                    doc.Lines.MeasureUnit = line.unitMsr;
+                if (!string.IsNullOrEmpty(line.taxCode))
+                    doc.Lines.TaxCode = line.taxCode;
+                if (!string.IsNullOrEmpty(line.ocrCode))
+                    doc.Lines.CostingCode = line.ocrCode;
+                if (line.numPerMsr != 0)
+                    doc.Lines.UnitsOfMeasurment = line.numPerMsr;
+                if (line.baseEntry != 0)
+                {
+                    doc.Lines.BaseEntry = line.baseEntry;
+                    doc.Lines.BaseLine = line.baseLine;
+                    doc.Lines.BaseType = line.baseType;
+                }
+
+                #region UDF's
+                foreach (UserDefinedField item in line.userDefinedFields)
+                {
+                    if (!string.IsNullOrEmpty(item.value))
+                        switch (item.type)
+                        {
+                            case UdfType.Alphanumeric:
+                                doc.Lines.UserFields.Fields.Item(item.name).Value = item.value;
+                                break;
+                            case UdfType.Numeric:
+                                doc.Lines.UserFields.Fields.Item(item.name).Value = double.Parse(item.value);
+                                break;
+                            case UdfType.Datetime:
+                                doc.Lines.UserFields.Fields.Item(item.name).Value = DateTime.Parse(item.value);
+                                break;
+                            case UdfType.Price:
+                                doc.Lines.UserFields.Fields.Item(item.name).Value = double.Parse(item.value);
+                                break;
+                            case UdfType.Text:
+                                doc.Lines.UserFields.Fields.Item(item.name).Value = item.value;
+                                break;
+                            default:
+                                break;
+                        }
+                }
+                #endregion
+
+                #region Batchs
+                if (line.batchNumbers != null)
+                    foreach (BatchNumber batchNumber in line.batchNumbers)
+                    {
+                        doc.Lines.BatchNumbers.BatchNumber = batchNumber.DistNumber;
+                        doc.Lines.BatchNumbers.Quantity = batchNumber.Quantity;
+                        doc.Lines.BatchNumbers.ExpiryDate = batchNumber.ExpDate;
+                        doc.Lines.BatchNumbers.Add();
+                    }
+                #endregion
+
+                #region Series
+                if (line.serialNumbers != null)
+                    foreach (SerialNumber serie in line.serialNumbers)
+                    {
+
+                        doc.Lines.SerialNumbers.InternalSerialNumber = serie.DisNumber;
+                        doc.Lines.SerialNumbers.Add();
+                    }
+                doc.Lines.Add();
+                #endregion
+            }
+            #endregion
+
+            if (doc.Add() != 0)
+            {
+                throw new SAPException(sapConn.company.GetLastErrorCode(), sapConn.company.GetLastErrorDescription());
+            }
+            document.docEntry = Convert.ToInt32(sapConn.company.GetNewObjectKey());
+            return document;
         }
         #endregion
     }

@@ -14,109 +14,271 @@ namespace Orkidea.Framework.SAP.BusinessOne.Entities.BusinessPartners
     [DataContract(Namespace = "http://WSSAP")]
     public class BusinessPartner
     {
-        /// <summary>
-        /// Código del socio de negocios
-        /// </summary>
+        #region Fields
+        #region Basic Data
         [DataMember]
         public string cardCode { set; get; }
-        /// <summary>
-        /// 
-        /// </summary>
+
         [DataMember]
         public CardType cardType { set; get; }
-        /// <summary>
-        /// Nombre del socio de negocios
-        /// </summary>
+
         [DataMember]
         public string cardName { set; get; }
-        /// <summary>
-        /// Sigla del socio de negocios
-        /// </summary>
+
         [DataMember]
         public string cardFName { set; get; }
+
         [DataMember]
-        public string debPayAcct { get; set; }
-        [DataMember]
-        public int? territory { get; set; }
-        [DataMember]
-        public string accCritria { get; set; }
-        [DataMember]
-        public string blockDunn { get; set; }
-        [DataMember]
-        public string collecAuth { get; set; }
-        [DataMember]
-        public double creditLine { get; set; }
-        [DataMember]
-        public string deferrTax { get; set; }
-        /// <summary>
-        /// Cédula o NIT
-        /// </summary>
-        /// <summary>
-        /// Nombre del socio de negocios
-        /// </summary>
-        [DataMember]
-        public string currency { set; get; }
-        /// <summary>
-        /// Nombre del socio de negocios
-        /// </summary>
-        [DataMember]
-        public string groupCode { set; get; }
+        public int groupCode { set; get; }
+
         [DataMember]
         public string licTradNum { set; get; }
+
         [DataMember]
-        public string address { get; set; }
-        /// <summary>
-        /// Teléfono 1
-        /// </summary>
+        public string currency { set; get; }
+        #endregion
+
+        #region General tab
         [DataMember]
         public string phone1 { set; get; }
-        /// <summary>
-        /// Teléfono 2
-        /// </summary>
+
         [DataMember]
         public string phone2 { set; get; }
-        /// <summary>
-        /// Teléfono Celular
-        /// </summary>
+
         [DataMember]
         public string cellular { set; get; }
-        /// <summary>
-        /// Fax
-        /// </summary>
+
         [DataMember]
         public string fax { set; get; }
-        /// <summary>
-        /// E_Mail
-        /// </summary>
+
         [DataMember]
         public string e_Mail { set; get; }
-        [DataMember]
-        public string equ { get; set; }
-        /// <summary>
-        /// Nombre del socio de negocios
-        /// </summary>
-        [DataMember]
-        public string slpCode { set; get; }
-        [DataMember]
-        public string freeText { set; get; }
 
         [DataMember]
-        public List<UserDefinedField> UserDefinedFields { get; set; }
+        public string password { get; set; }
 
-        /// <summary>
-        /// Inicializa atributos
-        /// </summary>
+        [DataMember]
+        public int slpCode { set; get; }
+
+        [DataMember]
+        public string agentCode { set; get; }
+
+        [DataMember]
+        public string cntctPrsn { get; set; }
+
+        [DataMember]
+        public string address { get; set; }
+
+        [DataMember]
+        public int? territory { get; set; }
+        #endregion
+
+        #region Contact persons tab
+        [DataMember]
+        public List<ContactEmployee> contactPersons { get; set; }
+        #endregion
+
+        #region Addresses tab
+        [DataMember]
+        public List<BusinessPartnerAddress> addresses { get; set; }
+        #endregion
+
+        #region Payment temrs tab
+        [DataMember]
+        public int? groupNum { get; set; }
+
+        [DataMember]
+        public double? intrstRate { get; set; }
+
+        [DataMember]
+        public int? listNum { get; set; }
+
+        [DataMember]
+        public double? discount { get; set; }
+
+        [DataMember]
+        public double? creditLine { get; set; }
+
+        [DataMember]
+        public double? debitLine { get; set; }
+
+        [DataMember]
+        public string dunTerm { get; set; }
+        #endregion
+
+        #region Accounting tab
+
+        #region General subtab
+        [DataMember]
+        public string debPayAcct { get; set; }
+
+        [DataMember]
+        public bool blockDunn { get; set; }
+        #endregion
+
+        #region Tax subtab
+        [DataMember]
+        public bool wtLiable { get; set; }
+
+        [DataMember]
+        public List<BusinessPartnerWithholdingTax> withholdingTaxes { get; set; }
+        #endregion
+
+        #endregion
+
+        #region Propierties tab
+        [DataMember]
+        public bool qryGroup1 { get; set; }
+        [DataMember]
+        public bool qryGroup2 { get; set; }
+        [DataMember]
+        public bool qryGroup3 { get; set; }
+        [DataMember]
+        public bool qryGroup4 { get; set; }
+        [DataMember]
+        public bool qryGroup5 { get; set; }
+        [DataMember]
+        public bool qryGroup6 { get; set; }
+        [DataMember]
+        public bool qryGroup7 { get; set; }
+        [DataMember]
+        public bool qryGroup8 { get; set; }
+        [DataMember]
+        public bool qryGroup9 { get; set; }
+        [DataMember]
+        public bool qryGroup10 { get; set; }
+        [DataMember]
+        public bool qryGroup11 { get; set; }
+        [DataMember]
+        public bool qryGroup12 { get; set; }
+        [DataMember]
+        public bool qryGroup13 { get; set; }
+        [DataMember]
+        public bool qryGroup14 { get; set; }
+        [DataMember]
+        public bool qryGroup15 { get; set; }
+        [DataMember]
+        public bool qryGroup16 { get; set; }
+        [DataMember]
+        public bool qryGroup17 { get; set; }
+        [DataMember]
+        public bool qryGroup18 { get; set; }
+        [DataMember]
+        public bool qryGroup19 { get; set; }
+        [DataMember]
+        public bool qryGroup20 { get; set; }
+        [DataMember]
+        public bool qryGroup21 { get; set; }
+        [DataMember]
+        public bool qryGroup22 { get; set; }
+        [DataMember]
+        public bool qryGroup23 { get; set; }
+        [DataMember]
+        public bool qryGroup24 { get; set; }
+        [DataMember]
+        public bool qryGroup25 { get; set; }
+        [DataMember]
+        public bool qryGroup26 { get; set; }
+        [DataMember]
+        public bool qryGroup27 { get; set; }
+        [DataMember]
+        public bool qryGroup28 { get; set; }
+        [DataMember]
+        public bool qryGroup29 { get; set; }
+        [DataMember]
+        public bool qryGroup30 { get; set; }
+        [DataMember]
+        public bool qryGroup31 { get; set; }
+        [DataMember]
+        public bool qryGroup32 { get; set; }
+        [DataMember]
+        public bool qryGroup33 { get; set; }
+        [DataMember]
+        public bool qryGroup34 { get; set; }
+        [DataMember]
+        public bool qryGroup35 { get; set; }
+        [DataMember]
+        public bool qryGroup36 { get; set; }
+        [DataMember]
+        public bool qryGroup37 { get; set; }
+        [DataMember]
+        public bool qryGroup38 { get; set; }
+        [DataMember]
+        public bool qryGroup39 { get; set; }
+        [DataMember]
+        public bool qryGroup40 { get; set; }
+        [DataMember]
+        public bool qryGroup41 { get; set; }
+        [DataMember]
+        public bool qryGroup42 { get; set; }
+        [DataMember]
+        public bool qryGroup43 { get; set; }
+        [DataMember]
+        public bool qryGroup44 { get; set; }
+        [DataMember]
+        public bool qryGroup45 { get; set; }
+        [DataMember]
+        public bool qryGroup46 { get; set; }
+        [DataMember]
+        public bool qryGroup47 { get; set; }
+        [DataMember]
+        public bool qryGroup48 { get; set; }
+        [DataMember]
+        public bool qryGroup49 { get; set; }
+        [DataMember]
+        public bool qryGroup50 { get; set; }
+        [DataMember]
+        public bool qryGroup51 { get; set; }
+        [DataMember]
+        public bool qryGroup52 { get; set; }
+        [DataMember]
+        public bool qryGroup53 { get; set; }
+        [DataMember]
+        public bool qryGroup54 { get; set; }
+        [DataMember]
+        public bool qryGroup55 { get; set; }
+        [DataMember]
+        public bool qryGroup56 { get; set; }
+        [DataMember]
+        public bool qryGroup57 { get; set; }
+        [DataMember]
+        public bool qryGroup58 { get; set; }
+        [DataMember]
+        public bool qryGroup59 { get; set; }
+        [DataMember]
+        public bool qryGroup60 { get; set; }
+        [DataMember]
+        public bool qryGroup61 { get; set; }
+        [DataMember]
+        public bool qryGroup62 { get; set; }
+        [DataMember]
+        public bool qryGroup63 { get; set; }
+        [DataMember]
+        public bool qryGroup64 { get; set; }
+
+
+        #endregion
+
+        #region Remarks tab
+        [DataMember]
+        public string freeText { get; set; }
+        #endregion
+
+        #region UDF's
+        [DataMember]
+        public List<UserDefinedField> userDefinedFields { get; set; }
+        #endregion 
+        #endregion
+
+        #region Constructor
         public BusinessPartner()
-        {
-            this.cardCode = String.Empty;
-            this.cardName = String.Empty;
-            this.licTradNum = String.Empty;
-            this.phone1 = String.Empty;
-            this.phone2 = String.Empty;
-            this.cellular = String.Empty;
-            this.fax = String.Empty;
-            this.e_Mail = String.Empty;
-            this.UserDefinedFields = new List<UserDefinedField>();
-        }
+        {            
+            this.contactPersons = new List<ContactEmployee>();
+            this.addresses = new List<BusinessPartnerAddress>();
+            this.withholdingTaxes = new List<BusinessPartnerWithholdingTax>();
+            this.userDefinedFields = new List<UserDefinedField>();
+
+        } 
+        #endregion
     }
 }

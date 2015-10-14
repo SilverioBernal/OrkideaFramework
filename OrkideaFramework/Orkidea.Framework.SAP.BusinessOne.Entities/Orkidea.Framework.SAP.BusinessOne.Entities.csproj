@@ -40,23 +40,43 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BusinessPartners\AddressType.cs" />
     <Compile Include="BusinessPartners\BusinessPartner.cs" />
+    <Compile Include="BusinessPartners\BusinessPartnerAddress.cs" />
+    <Compile Include="BusinessPartners\BusinessPartnerGroup.cs" />
+    <Compile Include="BusinessPartners\BusinessPartnerWithholdingTax.cs" />
     <Compile Include="BusinessPartners\CardType.cs" />
+    <Compile Include="BusinessPartners\ContactEmployee.cs" />
+    <Compile Include="BusinessPartners\BusinessPartnerDunninTerm.cs" />
+    <Compile Include="BusinessPartners\GenericBusinessPartner.cs" />
+    <Compile Include="BusinessPartners\PaymentAge.cs" />
+    <Compile Include="BusinessPartners\PaymentTerm.cs" />
+    <Compile Include="Finance\SalesTaxCode.cs" />
+    <Compile Include="Finance\WithholdingTax.cs" />
+    <Compile Include="Global\Administration\Country.cs" />
+    <Compile Include="Global\Administration\Currency.cs" />
+    <Compile Include="Global\Administration\SapDistributionRule.cs" />
+    <Compile Include="Global\Administration\DocumentSeries.cs" />
+    <Compile Include="Global\Administration\SalesPerson.cs" />
+    <Compile Include="Global\Administration\SapDocumentType.cs" />
+    <Compile Include="Global\Administration\State.cs" />
     <Compile Include="Global\Documents\DocumentSerie.cs" />
     <Compile Include="Global\ExceptionManagement\BusinessException.cs" />
     <Compile Include="Global\ExceptionManagement\DataAccessFault.cs" />
     <Compile Include="Global\ExceptionManagement\GenericException.cs" />
     <Compile Include="Global\ExceptionManagement\SAPException.cs" />
+    <Compile Include="Global\Misc\AppConnData.cs" />
     <Compile Include="Global\UserDefinedFileds\UdfType.cs" />
     <Compile Include="Global\UserDefinedFileds\UserDefinedField.cs" />
+    <Compile Include="Global\UserDefinedFileds\UserDefinedFieldValue.cs" />
     <Compile Include="Inventory\BatchNumber.cs" />
+    <Compile Include="Inventory\GenericItem.cs" />
     <Compile Include="Inventory\Item.cs" />
     <Compile Include="Inventory\SerialNumber.cs" />
     <Compile Include="Inventory\StockLevel.cs" />
     <Compile Include="Inventory\Warehouse.cs" />
     <Compile Include="MarketingDocuments\MarketingDocument.cs" />
     <Compile Include="MarketingDocuments\MarketingDocumentLine.cs" />
-    <Compile Include="MarketingDocuments\MktgDocType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
