@@ -19,6 +19,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orkidea.Framework.SAP.Busin
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orkidea.Framework.Data", "Orkidea.Framework.Data\Orkidea.Framework.Data.csproj", "{785B950A-E3E1-4CC4-A28D-57FAC0892709}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utilities", "Utilities", "{C826D952-7739-4015-9351-96BC4650FF43}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "crypto", "crypto\crypto.csproj", "{B26A568C-E3AE-495E-8F9B-6A7657C065A7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +53,10 @@ Global
 		{785B950A-E3E1-4CC4-A28D-57FAC0892709}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{785B950A-E3E1-4CC4-A28D-57FAC0892709}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{785B950A-E3E1-4CC4-A28D-57FAC0892709}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B26A568C-E3AE-495E-8F9B-6A7657C065A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B26A568C-E3AE-495E-8F9B-6A7657C065A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B26A568C-E3AE-495E-8F9B-6A7657C065A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B26A568C-E3AE-495E-8F9B-6A7657C065A7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,5 +68,6 @@ Global
 		{785B950A-E3E1-4CC4-A28D-57FAC0892709} = {91F3901A-7DAA-465C-9818-F2616AFFAA4D}
 		{D7842760-5AB5-4432-8AA6-4318E5538C79} = {A75CB704-D2DB-40D4-A758-0722778FAF6C}
 		{D545A4E4-3C4D-4ECC-AA1B-C5E68080039E} = {A75CB704-D2DB-40D4-A758-0722778FAF6C}
+		{B26A568C-E3AE-495E-8F9B-6A7657C065A7} = {C826D952-7739-4015-9351-96BC4650FF43}
 	EndGlobalSection
 EndGlobal

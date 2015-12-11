@@ -8,6 +8,6 @@ namespace Orkidea.Framework.SAP.BusinessOne.Entities.Global.Administration
 {
     public enum SapDocumentType
     {
-        SalesInvoice, SalesCreditNote, SalesDelivery, SalesReturn, SalesOrder, PurchaseInvoice, PurchaseCreditNote, PurchaseDelivery, PurchaseReturn, PurchaseOrder
+        SalesInvoice, SalesCreditNote, SalesDelivery, SalesReturn, SalesOrder, PurchaseInvoice, PurchaseCreditNote, PurchaseDelivery, PurchaseReturn, PurchaseOrder, Quotation, Draft
     }
 }

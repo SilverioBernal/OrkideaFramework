@@ -62,7 +62,7 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
                     {
                         name = this.reader.GetValue(0).ToString(),
                         type = this.reader.GetValue(1).ToString() == "A" ?UdfType.Alphanumeric : 
-                        (this.reader.GetValue(1).ToString() == "N" ? UdfType.Numeric :
+                        (this.reader.GetValue(1).ToString() == "N" ? UdfType.Double :
                         (this.reader.GetValue(1).ToString() == "D" ? UdfType.Datetime :
                         (this.reader.GetValue(1).ToString() == "B" ? UdfType.Price : UdfType.Text)))
 
@@ -192,8 +192,7 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
             oSQL.Append("SELECT series, seriesName ");
 
             switch (docType)
-            {
-                
+            {                
                 case SapDocumentType.SalesInvoice:
                     oSQL.Append("FROM NNM1 where ObjectCode = '13' and locked = 'N'");
                     break;
@@ -223,6 +222,9 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
                     break;
                 case SapDocumentType.PurchaseOrder:
                     oSQL.Append("FROM NNM1 where ObjectCode = '22' and locked = 'N'");
+                    break;
+                case SapDocumentType.Quotation:
+                    oSQL.Append("FROM NNM1 where ObjectCode = '23' and locked = 'N'");
                     break;                
                 default:
                     break;

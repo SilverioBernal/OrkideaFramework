@@ -3,6 +3,7 @@ using Orkidea.Framework.SAP.BusinessOne.DiApiClient.SecurityData;
 using Orkidea.Framework.SAP.BusinessOne.Entities.BusinessPartners;
 using Orkidea.Framework.SAP.BusinessOne.Entities.Finance;
 using Orkidea.Framework.SAP.BusinessOne.Entities.Global.ExceptionManagement;
+using Orkidea.Framework.SAP.BusinessOne.Entities.Global.Reports;
 using Orkidea.Framework.SAP.BusinessOne.Entities.Global.UserDefinedFileds;
 using SAPbobsCOM;
 using System;
@@ -26,6 +27,8 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
         /// Lector
         /// </summary>
         private IDataReader reader;
+
+        private string connStr;
         #endregion
 
         #region Constructor
@@ -35,11 +38,13 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
         public BusinessPartnerData()
         {
             this.dataBase = DatabaseFactory.CreateDatabase("SAP");
+            this.connStr = "SAP";
         }
 
         public BusinessPartnerData(string connStringName)
         {
             this.dataBase = DatabaseFactory.CreateDatabase(connStringName);
+            this.connStr = connStringName;
         }
         #endregion
 
@@ -261,9 +266,61 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
             return documents;
         }
 
+        public List<BusinessPartnerProp> GetBusinessPartnerPropList()
+        {
+            StringBuilder oSQL = new StringBuilder();
+            oSQL.Append("select GroupCode, GroupName from OCQG order by GroupCode ");
+            
+            DbCommand myCommand = this.dataBase.GetSqlStringCommand(oSQL.ToString());
+
+            List<BusinessPartnerProp> bpProps = new List<BusinessPartnerProp>();
+
+            using (this.reader = this.dataBase.ExecuteReader(myCommand))
+            {
+                while (this.reader.Read())
+                {
+                    BusinessPartnerProp prop = new BusinessPartnerProp();
+                    prop.groupCode = int.Parse(this.reader.GetValue(0).ToString());
+                    prop.groupName = this.reader.GetValue(1).ToString();
+                    
+                    bpProps.Add(prop);
+                }
+            }
+            return bpProps;
+        }
+
+        public List<ItemPrice> GetBusinessPartnerLastPricesList(string cardCode, DateTime from, DateTime to)
+        {
+            StringBuilder oSQL = new StringBuilder();
+            oSQL.Append("select distinct b.ItemCode, c.ItemName, b.Price from ordr a ");
+            oSQL.Append("inner join RDR1 b on a.DocEntry = b.DocEntry ");
+            oSQL.Append("inner join OITM c on b.ItemCode = c.ItemCode ");
+            oSQL.Append(string.Format("where a.cardcode = '{0}' ", cardCode));
+            oSQL.Append(string.Format("and a.DocDate between '{0}' and '{1}' ", from.ToString("yyyy-MM-dd"), to.ToString("yyyy-MM-dd")));
+            oSQL.Append("order by b.ItemCode, Price ");
+
+            DbCommand myCommand = this.dataBase.GetSqlStringCommand(oSQL.ToString());
+
+            List<ItemPrice> prices = new List<ItemPrice>();
+
+            using (this.reader = this.dataBase.ExecuteReader(myCommand))
+            {
+                while (this.reader.Read())
+                {
+                    ItemPrice price = new ItemPrice();
+                    price.itemCode = this.reader.GetValue(0).ToString();
+                    price.itemName = this.reader.GetValue(1).ToString();
+                    price.price = double.Parse(this.reader.GetValue(2).ToString());
+
+                    prices.Add(price);
+                }
+            }
+            return prices;
+        }
+
         public BusinessPartner GetSingle(string cardCode)
         {
-            UtilitiesData utilities = new UtilitiesData();
+            UtilitiesData utilities = new UtilitiesData(this.connStr);
             BusinessPartner partner = new BusinessPartner();
             StringBuilder oSQL = new StringBuilder();
             List<UserDefinedField> ocrdUdfs = utilities.GetUserDefinedFieldList("OCRD");
@@ -428,7 +485,7 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
                 }
             }
             return partner;
-        }
+        }        
 
         public void Add(BusinessPartner partner)
         {
@@ -613,7 +670,10 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
                             case UdfType.Alphanumeric:
                                 bp.UserFields.Fields.Item(item.name).Value = item.value;
                                 break;
-                            case UdfType.Numeric:
+                            case UdfType.Integer:
+                                bp.UserFields.Fields.Item(item.name).Value = int.Parse(item.value);
+                                break;
+                            case UdfType.Double:
                                 bp.UserFields.Fields.Item(item.name).Value = double.Parse(item.value);
                                 break;
                             case UdfType.Datetime:
@@ -867,7 +927,10 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
                             case UdfType.Alphanumeric:
                                 bp.UserFields.Fields.Item(item.name).Value = item.value;
                                 break;
-                            case UdfType.Numeric:
+                            case UdfType.Integer:
+                                bp.UserFields.Fields.Item(item.name).Value = int.Parse(item.value);
+                                break;
+                            case UdfType.Double:
                                 bp.UserFields.Fields.Item(item.name).Value = double.Parse(item.value);
                                 break;
                             case UdfType.Datetime:
@@ -940,7 +1003,10 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
                             case UdfType.Alphanumeric:
                                 bp.UserFields.Fields.Item(item.name).Value = item.value;
                                 break;
-                            case UdfType.Numeric:
+                            case UdfType.Integer:
+                                bp.UserFields.Fields.Item(item.name).Value = int.Parse(item.value);
+                                break;
+                            case UdfType.Double:
                                 bp.UserFields.Fields.Item(item.name).Value = double.Parse(item.value);
                                 break;
                             case UdfType.Datetime:
@@ -1012,7 +1078,10 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
                             case UdfType.Alphanumeric:
                                 bp.UserFields.Fields.Item(item.name).Value = item.value;
                                 break;
-                            case UdfType.Numeric:
+                            case UdfType.Integer:
+                                bp.UserFields.Fields.Item(item.name).Value = int.Parse(item.value);
+                                break;
+                            case UdfType.Double:
                                 bp.UserFields.Fields.Item(item.name).Value = double.Parse(item.value);
                                 break;
                             case UdfType.Datetime:
@@ -1159,6 +1228,371 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
             bp.BPWithholdingTax.WTCode = withholdingTax.wtCode;
 
             bp.Update();
+        }
+
+        public void Update(BusinessPartner partner)
+        {
+            BusinessPartners bp; //= new BusinessPartners();
+            bp = (BusinessPartners)SAPConnection.conn.company.GetBusinessObject(BoObjectTypes.oBusinessPartners);
+
+            bp.GetByKey(partner.cardCode);
+
+            #region Basic Data            
+            //switch (partner.cardType)
+            //{
+            //    case CardType.Customer:
+            //        bp.CardType = BoCardTypes.cCustomer;
+            //        break;
+            //    case CardType.Supplier:
+            //        bp.CardType = BoCardTypes.cSupplier;
+            //        break;
+            //    case CardType.Lead:
+            //        bp.CardType = BoCardTypes.cLid;
+            //        break;
+            //    default:
+            //        break;
+            //}
+
+            bp.CardName = partner.cardName;
+
+            if (!string.IsNullOrEmpty(partner.cardFName))
+                bp.CardForeignName = partner.cardFName;
+
+            bp.GroupCode = partner.groupCode;
+            bp.FederalTaxID = partner.licTradNum;
+            bp.Currency = partner.currency;
+            #endregion
+
+            #region General tab
+            bp.Phone1 = partner.phone1;
+
+            if (!string.IsNullOrEmpty(partner.phone2))
+                bp.Phone2 = partner.phone2;
+            if (!string.IsNullOrEmpty(partner.cellular))
+                bp.Cellular = partner.cellular;
+            if (!string.IsNullOrEmpty(partner.fax))
+                bp.Fax = partner.fax;
+            if (!string.IsNullOrEmpty(partner.e_Mail))
+                bp.EmailAddress = partner.e_Mail;
+            if (!string.IsNullOrEmpty(partner.password))
+                bp.Password = partner.password;
+            if (partner.slpCode != 0)
+                bp.SalesPersonCode = partner.slpCode;
+            if (partner.territory != null)
+                bp.Territory = (int)partner.territory;
+
+            #endregion
+
+            #region Payment temrs tab
+            if (partner.groupNum != null)
+                bp.PayTermsGrpCode = (int)partner.groupNum;
+            if (partner.intrstRate != null)
+                bp.IntrestRatePercent = (double)partner.intrstRate;
+            if (partner.listNum != null)
+                bp.PriceListNum = (int)partner.listNum;
+            if (partner.discount != null)
+                bp.DiscountPercent = (double)partner.discount;
+            if (partner.creditLine != null)
+                bp.CreditLimit = (double)partner.creditLine;
+            if (partner.debitLine != null)
+                bp.MaxCommitment = (double)partner.debitLine;
+            if (!string.IsNullOrEmpty(partner.dunTerm))
+                bp.DunningTerm = partner.dunTerm;
+            #endregion
+
+            #region Accounting tab
+            #region general subtab
+            if (!string.IsNullOrEmpty(partner.debPayAcct))
+                bp.DebitorAccount = partner.debPayAcct;
+
+            if (partner.blockDunn)
+                bp.BlockDunning = BoYesNoEnum.tYES;
+            else
+                bp.BlockDunning = BoYesNoEnum.tNO;
+
+            #endregion
+            #region tax subtab
+            if (partner.wtLiable)
+            {
+                bp.SubjectToWithholdingTax = BoYesNoEnum.tYES;                
+            }
+            #endregion
+            #endregion
+
+            #region Propierties tab
+            bp.set_Properties(1, partner.qryGroup1 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(2, partner.qryGroup2 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(3, partner.qryGroup3 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(4, partner.qryGroup4 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(5, partner.qryGroup5 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(6, partner.qryGroup6 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(7, partner.qryGroup7 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(8, partner.qryGroup8 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(9, partner.qryGroup9 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(10, partner.qryGroup10 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(11, partner.qryGroup11 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(12, partner.qryGroup12 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(13, partner.qryGroup13 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(14, partner.qryGroup14 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(15, partner.qryGroup15 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(16, partner.qryGroup16 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(17, partner.qryGroup17 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(18, partner.qryGroup18 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(19, partner.qryGroup19 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(20, partner.qryGroup20 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(21, partner.qryGroup21 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(22, partner.qryGroup22 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(23, partner.qryGroup23 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(24, partner.qryGroup24 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(25, partner.qryGroup25 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(26, partner.qryGroup26 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(27, partner.qryGroup27 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(28, partner.qryGroup28 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(29, partner.qryGroup29 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(30, partner.qryGroup30 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(31, partner.qryGroup31 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(32, partner.qryGroup32 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(33, partner.qryGroup33 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(34, partner.qryGroup34 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(35, partner.qryGroup35 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(36, partner.qryGroup36 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(37, partner.qryGroup37 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(38, partner.qryGroup38 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(39, partner.qryGroup39 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(40, partner.qryGroup40 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(41, partner.qryGroup41 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(42, partner.qryGroup42 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(43, partner.qryGroup43 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(44, partner.qryGroup44 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(45, partner.qryGroup45 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(46, partner.qryGroup46 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(47, partner.qryGroup47 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(48, partner.qryGroup48 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(49, partner.qryGroup49 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(50, partner.qryGroup50 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(51, partner.qryGroup51 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(52, partner.qryGroup52 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(53, partner.qryGroup53 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(54, partner.qryGroup54 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(55, partner.qryGroup55 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(56, partner.qryGroup56 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(57, partner.qryGroup57 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(58, partner.qryGroup58 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(59, partner.qryGroup59 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(60, partner.qryGroup60 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(61, partner.qryGroup61 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(62, partner.qryGroup62 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(63, partner.qryGroup63 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(64, partner.qryGroup64 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            #endregion
+
+            #region Remarks tab
+            if (!string.IsNullOrEmpty(partner.freeText))
+                bp.FreeText = partner.freeText;
+            #endregion
+
+            #region UDF's
+            if (partner.userDefinedFields != null)
+                foreach (UserDefinedField item in partner.userDefinedFields)
+                {
+                    if (!string.IsNullOrEmpty(item.value))
+                        switch (item.type)
+                        {
+                            case UdfType.Alphanumeric:
+                                bp.UserFields.Fields.Item(item.name).Value = item.value;
+                                break;
+                            case UdfType.Integer:
+                                bp.UserFields.Fields.Item(item.name).Value = int.Parse(item.value);
+                                break;
+                            case UdfType.Double:
+                                bp.UserFields.Fields.Item(item.name).Value = double.Parse(item.value);
+                                break;
+                            case UdfType.Datetime:
+                                bp.UserFields.Fields.Item(item.name).Value = DateTime.Parse(item.value);
+                                break;
+                            case UdfType.Price:
+                                bp.UserFields.Fields.Item(item.name).Value = double.Parse(item.value);
+                                break;
+                            case UdfType.Text:
+                                bp.UserFields.Fields.Item(item.name).Value = item.value;
+                                break;
+                            default:
+                                break;
+                        }
+                }
+            #endregion
+
+            if (bp.Update() != 0)
+                throw new SAPException(SAPConnection.conn.company.GetLastErrorCode(), SAPConnection.conn.company.GetLastErrorDescription());
+        }
+
+        public void Update(BusinessPartner partner, SAPConnection sapConn)
+        {
+            BusinessPartners bp; //= new BusinessPartners();
+            bp = (BusinessPartners)sapConn.company.GetBusinessObject(BoObjectTypes.oBusinessPartners);
+
+            
+            if(!bp.GetByKey(partner.cardCode))
+                throw new SAPException(-9000, "Socio no encontrado");           
+
+            #region Basic Data            
+            bp.CardName = partner.cardName;
+
+            if (!string.IsNullOrEmpty(partner.cardFName))
+                bp.CardForeignName = partner.cardFName;
+
+            bp.GroupCode = partner.groupCode;
+            bp.FederalTaxID = partner.licTradNum;
+            //bp.Currency = partner.currency;
+            #endregion
+
+            #region General tab
+            bp.Phone1 = partner.phone1;
+
+            if (!string.IsNullOrEmpty(partner.phone2))
+                bp.Phone2 = partner.phone2;
+
+            if (!string.IsNullOrEmpty(partner.cellular))
+                bp.Cellular = partner.cellular;
+
+            if (!string.IsNullOrEmpty(partner.fax))
+                bp.Fax = partner.fax;
+
+            if (!string.IsNullOrEmpty(partner.e_Mail))
+                bp.EmailAddress = partner.e_Mail;
+
+            if (!string.IsNullOrEmpty(partner.password))
+                bp.Password = partner.password;
+
+            if (partner.slpCode != 0)
+                bp.SalesPersonCode = partner.slpCode;
+            if (partner.territory != null)
+                bp.Territory = (int)partner.territory;
+
+            #endregion
+
+            #region Payment temrs tab
+            if (partner.groupNum != null)
+                bp.PayTermsGrpCode = (int)partner.groupNum;
+            if (partner.intrstRate != null)
+                bp.IntrestRatePercent = (double)partner.intrstRate;
+            if (partner.listNum != null)
+                bp.PriceListNum = (int)partner.listNum;
+            if (partner.discount != null)
+                bp.DiscountPercent = (double)partner.discount;
+            if (partner.creditLine != null)
+                bp.CreditLimit = (double)partner.creditLine;
+            if (partner.debitLine != null)
+                bp.MaxCommitment = (double)partner.debitLine;
+            if (!string.IsNullOrEmpty(partner.dunTerm))
+                bp.DunningTerm = partner.dunTerm;
+            #endregion            
+
+            #region Propierties tab
+            bp.set_Properties(1, partner.qryGroup1 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(2, partner.qryGroup2 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(3, partner.qryGroup3 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(4, partner.qryGroup4 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(5, partner.qryGroup5 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(6, partner.qryGroup6 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(7, partner.qryGroup7 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(8, partner.qryGroup8 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(9, partner.qryGroup9 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(10, partner.qryGroup10 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(11, partner.qryGroup11 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(12, partner.qryGroup12 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(13, partner.qryGroup13 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(14, partner.qryGroup14 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(15, partner.qryGroup15 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(16, partner.qryGroup16 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(17, partner.qryGroup17 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(18, partner.qryGroup18 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(19, partner.qryGroup19 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(20, partner.qryGroup20 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(21, partner.qryGroup21 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(22, partner.qryGroup22 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(23, partner.qryGroup23 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(24, partner.qryGroup24 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(25, partner.qryGroup25 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(26, partner.qryGroup26 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(27, partner.qryGroup27 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(28, partner.qryGroup28 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(29, partner.qryGroup29 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(30, partner.qryGroup30 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(31, partner.qryGroup31 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(32, partner.qryGroup32 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(33, partner.qryGroup33 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(34, partner.qryGroup34 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(35, partner.qryGroup35 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(36, partner.qryGroup36 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(37, partner.qryGroup37 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(38, partner.qryGroup38 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(39, partner.qryGroup39 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(40, partner.qryGroup40 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(41, partner.qryGroup41 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(42, partner.qryGroup42 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(43, partner.qryGroup43 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(44, partner.qryGroup44 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(45, partner.qryGroup45 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(46, partner.qryGroup46 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(47, partner.qryGroup47 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(48, partner.qryGroup48 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(49, partner.qryGroup49 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(50, partner.qryGroup50 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(51, partner.qryGroup51 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(52, partner.qryGroup52 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(53, partner.qryGroup53 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(54, partner.qryGroup54 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(55, partner.qryGroup55 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(56, partner.qryGroup56 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(57, partner.qryGroup57 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(58, partner.qryGroup58 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(59, partner.qryGroup59 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(60, partner.qryGroup60 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(61, partner.qryGroup61 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(62, partner.qryGroup62 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(63, partner.qryGroup63 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            bp.set_Properties(64, partner.qryGroup64 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
+            #endregion
+
+            #region Remarks tab
+            if (!string.IsNullOrEmpty(partner.freeText))
+                bp.FreeText = partner.freeText;
+            #endregion
+
+            #region UDF's
+            if (partner.userDefinedFields != null)
+                foreach (UserDefinedField item in partner.userDefinedFields)
+                {
+                    if (!string.IsNullOrEmpty(item.value))
+                        switch (item.type)
+                        {
+                            case UdfType.Alphanumeric:
+                                bp.UserFields.Fields.Item(item.name).Value = item.value;
+                                break;
+                            case UdfType.Integer:
+                                bp.UserFields.Fields.Item(item.name).Value = int.Parse(item.value);
+                                break;
+                            case UdfType.Double:
+                                bp.UserFields.Fields.Item(item.name).Value = double.Parse(item.value);
+                                break;
+                            case UdfType.Datetime:
+                                bp.UserFields.Fields.Item(item.name).Value = DateTime.Parse(item.value);
+                                break;
+                            case UdfType.Price:
+                                bp.UserFields.Fields.Item(item.name).Value = double.Parse(item.value);
+                                break;
+                            case UdfType.Text:
+                                bp.UserFields.Fields.Item(item.name).Value = item.value;
+                                break;
+                            default:
+                                break;
+                        }
+                }
+            #endregion
+
+            if (bp.Update() != 0)
+                throw new SAPException(sapConn.company.GetLastErrorCode(), sapConn.company.GetLastErrorDescription());           
         }
         #endregion
     }

@@ -74,6 +74,7 @@
     <Compile Include="BusinessPartnerGroupData.cs" />
     <Compile Include="FinanceData.cs" />
     <Compile Include="InventoryData.cs" />
+    <Compile Include="ManagementData.cs" />
     <Compile Include="MarketingDocumentData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SecurityData\SAPConnectionData.cs" />
