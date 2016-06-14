@@ -36,6 +36,12 @@ namespace Orkidea.Framework.SAP.BusinessOne.Entities.BusinessPartners
 
         [DataMember]
         public string currency { set; get; }
+
+        [DataMember]
+        public double? dNotesBal { get; set; }
+
+        [DataMember]
+        public double? ordersBal { get; set; }
         #endregion
 
         #region General tab
@@ -104,6 +110,9 @@ namespace Orkidea.Framework.SAP.BusinessOne.Entities.BusinessPartners
 
         [DataMember]
         public string dunTerm { get; set; }
+
+        [DataMember]
+        public double? balance { get; set; }
         #endregion
 
         #region Accounting tab

@@ -327,7 +327,7 @@ namespace Orkidea.Framework.Messaging
         {
             try
             {
-                var smtp = getSmtpSettings();
+                SmtpClient smtp = getSmtpSettings();
 
                 // create the mail message
                 MailMessage mail = new MailMessage();
@@ -452,7 +452,7 @@ namespace Orkidea.Framework.Messaging
         {
             try
             {
-                var smtp = getSmtpSettings();
+                SmtpClient smtp = getSmtpSettings();
 
                 // create the mail message
                 MailMessage mail = new MailMessage();

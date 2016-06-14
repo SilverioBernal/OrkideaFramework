@@ -70,6 +70,7 @@
     <Compile Include="Global\ExceptionManagement\DataAccessFault.cs" />
     <Compile Include="Global\ExceptionManagement\GenericException.cs" />
     <Compile Include="Global\ExceptionManagement\SAPException.cs" />
+    <Compile Include="Global\Misc\ActionType.cs" />
     <Compile Include="Global\Misc\AppConnData.cs" />
     <Compile Include="Global\Reports\ItemPrice.cs" />
     <Compile Include="Global\UserDefinedFileds\UdfType.cs" />

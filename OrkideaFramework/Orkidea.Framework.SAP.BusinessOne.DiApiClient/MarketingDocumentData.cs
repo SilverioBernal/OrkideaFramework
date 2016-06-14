@@ -453,6 +453,96 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="mktgDocType"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="fieldFilter">S = SlpCode - C = CardCode</param>
+        /// <param name="slp_card_Code">SlpCode/CardCode</param>
+        /// <returns></returns>
+        public List<LightMarketingDocument> GetList(SapDocumentType mktgDocType, DateTime startDate, DateTime endDate, char fieldFilter, string slp_card_Code)
+        {
+            StringBuilder oSQL = new StringBuilder();
+            List<LightMarketingDocument> documentList = new List<LightMarketingDocument>();
+            List<LightMarketingDocumentLine> documentsLinesList = new List<LightMarketingDocumentLine>();
+
+            #region Header query
+            oSQL.Append("Select a.DocEntry, a.DocNum, a.CardCode, a.CardName, a.DocDate, a.DocDueDate, a.DocStatus ");
+
+            switch (mktgDocType)
+            {
+                case SapDocumentType.SalesInvoice:
+                    oSQL.Append("FROM OINV a ");
+                    break;
+                case SapDocumentType.SalesCreditNote:
+                    oSQL.Append("FROM ORIN a ");
+                    break;
+                case SapDocumentType.SalesDelivery:
+                    oSQL.Append("FROM ODLN a ");
+                    break;
+                case SapDocumentType.SalesReturn:
+                    oSQL.Append("FROM ORDN a ");
+                    break;
+                case SapDocumentType.SalesOrder:
+                    oSQL.Append("FROM ORDR a ");
+                    break;
+                case SapDocumentType.PurchaseInvoice:
+                    oSQL.Append("FROM OPCH a ");
+                    break;
+                case SapDocumentType.PurchaseCreditNote:
+                    oSQL.Append("FROM ORPC a ");
+                    break;
+                case SapDocumentType.PurchaseDelivery:
+                    oSQL.Append("FROM OPDN a ");
+                    break;
+                case SapDocumentType.PurchaseReturn:
+                    oSQL.Append("FROM ORPD a ");
+                    break;
+                case SapDocumentType.PurchaseOrder:
+                    oSQL.Append("FROM OPOR a ");
+                    break;
+                case SapDocumentType.Quotation:
+                    oSQL.Append("FROM OQUT a ");
+                    break;
+                default:
+                    break;
+            }
+
+            if (fieldFilter == 'S')
+                oSQL.Append(string.Format("Where a.slpCode = '{0}' ", slp_card_Code));
+            else
+                oSQL.Append(string.Format("Where a.cardCode = '{0}' ", slp_card_Code));
+
+            oSQL.Append(string.Format("and a.DocDate between '{0}' and '{1}'", startDate.ToString("yyyy-MM-dd"), endDate.ToString("yyyy-MM-dd")));
+
+
+            DbCommand dbCommand = this.dataBase.GetSqlStringCommand(oSQL.ToString());
+            #endregion
+
+            #region Get Header Data
+            using (this.reader = this.dataBase.ExecuteReader(dbCommand))
+            {
+                while (this.reader.Read())
+                {
+                    LightMarketingDocument document = new LightMarketingDocument();
+                    document.docEntry = this.reader.IsDBNull(0) ? 0 : Convert.ToInt32(this.reader.GetValue(0).ToString());
+                    document.docNum = this.reader.IsDBNull(1) ? 0 : Convert.ToInt32(this.reader.GetValue(1).ToString());
+                    document.cardCode = this.reader.IsDBNull(2) ? "" : this.reader.GetValue(2).ToString();
+                    document.cardName = this.reader.IsDBNull(3) ? "" : this.reader.GetValue(3).ToString();
+                    document.docDate = this.reader.IsDBNull(4) ? DateTime.Now : Convert.ToDateTime(this.reader.GetValue(4).ToString());
+                    document.docDueDate = this.reader.IsDBNull(5) ? DateTime.Now : Convert.ToDateTime(this.reader.GetValue(5).ToString());
+                    document.docStatus = this.reader.IsDBNull(6) ? "" : this.reader.GetValue(6).ToString();
+
+                    documentList.Add(document);
+                }
+            }
+            #endregion
+
+            return documentList;
+        }
+
+        /// <summary>
         /// Consulta un socio de negocios en SAP Business One
         /// </summary>
         /// <param name="cardCode">Codigo de socio de negocio</param>
@@ -789,7 +879,11 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
                 #endregion
             }
             #endregion
+            //doc.Document_ApprovalRequests
+            //doc.GetApprovalTemplates();
+            //doc.HandleApprovalRequest
 
+            //doc.SaveDraftToDocument();
             if (doc.Add() != 0)
             {
                 throw new SAPException(SAPConnection.conn.company.GetLastErrorCode(), SAPConnection.conn.company.GetLastErrorDescription());
@@ -1055,37 +1149,37 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
             switch (mktgDocType)
             {
                 case SapDocumentType.SalesInvoice:
-                    doc = (Documents)SAPConnection.conn.company.GetBusinessObject(BoObjectTypes.oInvoices);
+                    doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oInvoices);
                     break;
                 case SapDocumentType.SalesCreditNote:
-                    doc = doc = (Documents)SAPConnection.conn.company.GetBusinessObject(BoObjectTypes.oCreditNotes);
+                    doc = doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oCreditNotes);
                     break;
                 case SapDocumentType.SalesDelivery:
-                    doc = doc = (Documents)SAPConnection.conn.company.GetBusinessObject(BoObjectTypes.oDeliveryNotes);
+                    doc = doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oDeliveryNotes);
                     break;
                 case SapDocumentType.SalesReturn:
-                    doc = (Documents)SAPConnection.conn.company.GetBusinessObject(BoObjectTypes.oReturns);
+                    doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oReturns);
                     break;
                 case SapDocumentType.SalesOrder:
-                    doc = (Documents)SAPConnection.conn.company.GetBusinessObject(BoObjectTypes.oOrders);
+                    doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oOrders);
                     break;
                 case SapDocumentType.PurchaseInvoice:
-                    doc = (Documents)SAPConnection.conn.company.GetBusinessObject(BoObjectTypes.oPurchaseInvoices);
+                    doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oPurchaseInvoices);
                     break;
                 case SapDocumentType.PurchaseCreditNote:
-                    doc = (Documents)SAPConnection.conn.company.GetBusinessObject(BoObjectTypes.oPurchaseCreditNotes);
+                    doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oPurchaseCreditNotes);
                     break;
                 case SapDocumentType.PurchaseDelivery:
-                    doc = (Documents)SAPConnection.conn.company.GetBusinessObject(BoObjectTypes.oPurchaseDeliveryNotes);
+                    doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oPurchaseDeliveryNotes);
                     break;
                 case SapDocumentType.PurchaseReturn:
-                    doc = (Documents)SAPConnection.conn.company.GetBusinessObject(BoObjectTypes.oPurchaseReturns);
+                    doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oPurchaseReturns);
                     break;
                 case SapDocumentType.PurchaseOrder:
-                    doc = (Documents)SAPConnection.conn.company.GetBusinessObject(BoObjectTypes.oPurchaseOrders);
+                    doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oPurchaseOrders);
                     break;
                 case SapDocumentType.Quotation:
-                    doc = (Documents)SAPConnection.conn.company.GetBusinessObject(BoObjectTypes.oQuotations);
+                    doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oQuotations);
                     break;
                 default:
                     break;
@@ -1094,6 +1188,61 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
 
 
             doc.GetByKey(docEntry);
+
+            if (doc.DocumentStatus == BoStatus.bost_Close)
+                throw new SAPException(-8900, "El pedido está cerrado");
+
+            if (doc.Cancel() != 0)
+                throw new SAPException(sapConn.company.GetLastErrorCode(), SAPConnection.conn.company.GetLastErrorDescription());
+        }
+
+        public void Cancel(SapDocumentType mktgDocType, MarketingDocument document, SAPConnection sapConn)
+        {
+            Documents doc = null;
+
+            #region Document definition
+            switch (mktgDocType)
+            {
+                case SapDocumentType.SalesInvoice:
+                    doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oInvoices);
+                    break;
+                case SapDocumentType.SalesCreditNote:
+                    doc = doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oCreditNotes);
+                    break;
+                case SapDocumentType.SalesDelivery:
+                    doc = doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oDeliveryNotes);
+                    break;
+                case SapDocumentType.SalesReturn:
+                    doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oReturns);
+                    break;
+                case SapDocumentType.SalesOrder:
+                    doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oOrders);
+                    break;
+                case SapDocumentType.PurchaseInvoice:
+                    doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oPurchaseInvoices);
+                    break;
+                case SapDocumentType.PurchaseCreditNote:
+                    doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oPurchaseCreditNotes);
+                    break;
+                case SapDocumentType.PurchaseDelivery:
+                    doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oPurchaseDeliveryNotes);
+                    break;
+                case SapDocumentType.PurchaseReturn:
+                    doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oPurchaseReturns);
+                    break;
+                case SapDocumentType.PurchaseOrder:
+                    doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oPurchaseOrders);
+                    break;
+                case SapDocumentType.Quotation:
+                    doc = (Documents)sapConn.company.GetBusinessObject(BoObjectTypes.oQuotations);
+                    break;
+                default:
+                    break;
+            }
+            #endregion
+
+
+            doc.GetByKey(document.docEntry);
 
             if (doc.DocumentStatus == BoStatus.bost_Close)
                 throw new SAPException(-8900, "El pedido está cerrado");
@@ -1150,10 +1299,9 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
                     break;
             }
 
-            oSQL.Append("Where docEntry = @docEntry");
+            oSQL.Append(string.Format("Where docEntry = {0}", docEntry.ToString()));
 
             DbCommand dbCommand = this.dataBase.GetSqlStringCommand(oSQL.ToString());
-            this.dataBase.AddInParameter(dbCommand, "docEntry", DbType.Int32, docEntry);
             #endregion
 
             #region Get Data
@@ -1167,7 +1315,75 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
             #endregion
 
             if (docNum < 0)
-                throw new SAPException(9999, "No se encuentra el documento especificado");
+                throw new BusinessException(9999, "No se encuentra el documento especificado - " + docEntry.ToString());
+
+            return docNum;
+        }
+
+        public int GetDocEntry(SapDocumentType mktgDocType, int webDocument)
+        {
+            StringBuilder oSQL = new StringBuilder();
+            int docNum = -1;
+            #region Header query
+            oSQL.Append("Select DocEntry ");
+            switch (mktgDocType)
+            {
+                case SapDocumentType.SalesInvoice:
+                    oSQL.Append("FROM OINV a ");
+                    break;
+                case SapDocumentType.SalesCreditNote:
+                    oSQL.Append("FROM ORIN a ");
+                    break;
+                case SapDocumentType.SalesDelivery:
+                    oSQL.Append("FROM ODLN a ");
+                    break;
+                case SapDocumentType.SalesReturn:
+                    oSQL.Append("FROM ORDN a ");
+                    break;
+                case SapDocumentType.SalesOrder:
+                    oSQL.Append("FROM ORDR a ");
+                    break;
+                case SapDocumentType.PurchaseInvoice:
+                    oSQL.Append("FROM OPCH a ");
+                    break;
+                case SapDocumentType.PurchaseCreditNote:
+                    oSQL.Append("FROM ORPC a ");
+                    break;
+                case SapDocumentType.PurchaseDelivery:
+                    oSQL.Append("FROM OPDN a ");
+                    break;
+                case SapDocumentType.PurchaseReturn:
+                    oSQL.Append("FROM ORPD a ");
+                    break;
+                case SapDocumentType.PurchaseOrder:
+                    oSQL.Append("FROM OPOR a ");
+                    break;
+                case SapDocumentType.Quotation:
+                    oSQL.Append("FROM OQUT a ");
+                    break;
+                case SapDocumentType.Draft:
+                    oSQL.Append("FROM ODRF a ");
+                    break;
+                default:
+                    break;
+            }
+
+            oSQL.Append(string.Format("Where U_orkWebDocument = '{0}'", webDocument.ToString()));
+            DbCommand dbCommand = this.dataBase.GetSqlStringCommand(oSQL.ToString());
+            #endregion
+
+            #region Get Data
+            using (this.reader = this.dataBase.ExecuteReader(dbCommand))
+            {
+                while (this.reader.Read())
+                {
+                    docNum = this.reader.IsDBNull(0) ? -1 : Convert.ToInt32(this.reader.GetValue(0).ToString());
+                }
+            }
+            #endregion
+
+            if (docNum < 0)
+                throw new BusinessException(9999, "No se encuentra el documento especificado - " + webDocument.ToString());
 
             return docNum;
         }
@@ -1175,7 +1391,7 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
         public Dictionary<int, int> GetDocNum(SapDocumentType mktgDocType, List<int> docEntry)
         {
             StringBuilder oSQL = new StringBuilder();
-            
+
             #region Header query
             oSQL.Append("Select DocEntry, DocNum ");
             switch (mktgDocType)
@@ -1241,7 +1457,7 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
             {
                 while (this.reader.Read())
                 {
-                    docs.Add(this.reader.IsDBNull(0) ? -1 : Convert.ToInt32(this.reader.GetValue(0).ToString()), this.reader.IsDBNull(0) ? -1 : Convert.ToInt32(this.reader.GetValue(1).ToString()));                    
+                    docs.Add(this.reader.IsDBNull(0) ? -1 : Convert.ToInt32(this.reader.GetValue(0).ToString()), this.reader.IsDBNull(0) ? -1 : Convert.ToInt32(this.reader.GetValue(1).ToString()));
                 }
             }
             #endregion
@@ -1250,6 +1466,148 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
                 throw new SAPException(9999, "No se encuentra el documento especificado");
 
             return docs;
+        }
+
+        public Dictionary<int, int> GetDocNum(SapDocumentType mktgDocType, List<string> webDocument)
+        {
+            StringBuilder oSQL = new StringBuilder();
+
+            #region Header query
+            oSQL.Append("Select DocEntry, DocNum ");
+            switch (mktgDocType)
+            {
+                case SapDocumentType.SalesInvoice:
+                    oSQL.Append("FROM OINV a ");
+                    break;
+                case SapDocumentType.SalesCreditNote:
+                    oSQL.Append("FROM ORIN a ");
+                    break;
+                case SapDocumentType.SalesDelivery:
+                    oSQL.Append("FROM ODLN a ");
+                    break;
+                case SapDocumentType.SalesReturn:
+                    oSQL.Append("FROM ORDN a ");
+                    break;
+                case SapDocumentType.SalesOrder:
+                    oSQL.Append("FROM ORDR a ");
+                    break;
+                case SapDocumentType.PurchaseInvoice:
+                    oSQL.Append("FROM OPCH a ");
+                    break;
+                case SapDocumentType.PurchaseCreditNote:
+                    oSQL.Append("FROM ORPC a ");
+                    break;
+                case SapDocumentType.PurchaseDelivery:
+                    oSQL.Append("FROM OPDN a ");
+                    break;
+                case SapDocumentType.PurchaseReturn:
+                    oSQL.Append("FROM ORPD a ");
+                    break;
+                case SapDocumentType.PurchaseOrder:
+                    oSQL.Append("FROM OPOR a ");
+                    break;
+                case SapDocumentType.Quotation:
+                    oSQL.Append("FROM OQUT a ");
+                    break;
+                case SapDocumentType.Draft:
+                    oSQL.Append("FROM ODRF a ");
+                    break;
+                default:
+                    break;
+            }
+
+            oSQL.Append("Where U_orkWebDocument in (");
+
+            for (int i = 0; i < webDocument.Count; i++)
+            {
+                if (i.Equals((webDocument.Count - 1)))
+                    oSQL.Append(string.Format("'{0}') ", webDocument[i]));
+                else
+                    oSQL.Append(string.Format("'{0}', ", webDocument[i]));
+            }
+
+            DbCommand dbCommand = this.dataBase.GetSqlStringCommand(oSQL.ToString());
+
+            #endregion
+
+            #region Get Data
+            Dictionary<int, int> docs = new Dictionary<int, int>();
+
+            using (this.reader = this.dataBase.ExecuteReader(dbCommand))
+            {
+                while (this.reader.Read())
+                {
+                    docs.Add(this.reader.IsDBNull(0) ? -1 : Convert.ToInt32(this.reader.GetValue(0).ToString()), this.reader.IsDBNull(0) ? -1 : Convert.ToInt32(this.reader.GetValue(1).ToString()));
+                }
+            }
+            #endregion
+
+            if (docs.Count == 0)
+                throw new SAPException(9999, "No se encuentra el documento especificado");
+
+            return docs;
+        }
+
+        public bool ExistWebDocument(SapDocumentType mktgDocType, string docEntry)
+        {
+            StringBuilder oSQL = new StringBuilder();
+
+            #region Header query
+            oSQL.Append("Select count(1) ");
+            switch (mktgDocType)
+            {
+                case SapDocumentType.SalesInvoice:
+                    oSQL.Append("FROM OINV a ");
+                    break;
+                case SapDocumentType.SalesCreditNote:
+                    oSQL.Append("FROM ORIN a ");
+                    break;
+                case SapDocumentType.SalesDelivery:
+                    oSQL.Append("FROM ODLN a ");
+                    break;
+                case SapDocumentType.SalesReturn:
+                    oSQL.Append("FROM ORDN a ");
+                    break;
+                case SapDocumentType.SalesOrder:
+                    oSQL.Append("FROM ORDR a ");
+                    break;
+                case SapDocumentType.PurchaseInvoice:
+                    oSQL.Append("FROM OPCH a ");
+                    break;
+                case SapDocumentType.PurchaseCreditNote:
+                    oSQL.Append("FROM ORPC a ");
+                    break;
+                case SapDocumentType.PurchaseDelivery:
+                    oSQL.Append("FROM OPDN a ");
+                    break;
+                case SapDocumentType.PurchaseReturn:
+                    oSQL.Append("FROM ORPD a ");
+                    break;
+                case SapDocumentType.PurchaseOrder:
+                    oSQL.Append("FROM OPOR a ");
+                    break;
+                case SapDocumentType.Quotation:
+                    oSQL.Append("FROM OQUT a ");
+                    break;
+                case SapDocumentType.Draft:
+                    oSQL.Append("FROM ODRF a ");
+                    break;
+                default:
+                    break;
+            }
+
+            oSQL.Append(string.Format("Where U_orkWebDocument = '{0}'", docEntry));
+
+            DbCommand dbCommand = this.dataBase.GetSqlStringCommand(oSQL.ToString());
+
+            #endregion
+
+            #region Get Data
+            if (Convert.ToInt32(this.dataBase.ExecuteScalar(dbCommand)) > 0)
+                return true;
+            else
+                return false;
+            #endregion
         }
         #endregion
     }

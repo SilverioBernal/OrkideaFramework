@@ -62,6 +62,27 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
             return taxCodes;
         }
 
+        public SalesTaxCode GetSingleTaxCode(string taxCode)
+        {
+            StringBuilder oSQL = new StringBuilder();
+            oSQL.Append(string.Format("SELECT code, name, rate FROM OSTC T0 where code = '{0}'", taxCode));
+
+            DbCommand dbCommand = this.dataBase.GetSqlStringCommand(oSQL.ToString());
+
+            SalesTaxCode tax = new SalesTaxCode();
+
+            using (this.reader = this.dataBase.ExecuteReader(dbCommand))
+            {
+                while (this.reader.Read())
+                {
+                    tax.code = this.reader.IsDBNull(0) ? "" : this.reader.GetValue(0).ToString();
+                    tax.name = this.reader.IsDBNull(1) ? "" : this.reader.GetValue(1).ToString();
+                    tax.rate = this.reader.IsDBNull(2) ? 0 : double.Parse(this.reader.GetValue(2).ToString());                    
+                }
+            }
+            return tax;
+        }
+
         public List<WithholdingTax> GetWithholdingTax()
         {
             StringBuilder oSQL = new StringBuilder();

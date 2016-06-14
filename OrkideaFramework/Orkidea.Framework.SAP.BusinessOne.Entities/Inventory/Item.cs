@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Orkidea.Framework.SAP.BusinessOne.Entities.Global.UserDefinedFileds;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -13,6 +14,25 @@ namespace Orkidea.Framework.SAP.BusinessOne.Entities.Inventory
     [DataContract(Namespace = "http://WSSAP")]
     public class Item
     {
+        /// <summary>
+        /// Tipos de gestión que puede tener un artículo
+        /// </summary>    
+        public enum Gestion
+        {
+            /// <summary>
+            /// Artículo gestionado por series
+            /// </summary>
+            Series,
+            /// <summary>
+            /// Artículo gestionado por lotes
+            /// </summary>
+            Lotes,
+            /// <summary>
+            /// Artículo sin método de gestión definido
+            /// </summary>
+            Ninguno
+        }
+
         #region Atributos
         /// <summary>
         /// ID Producto
@@ -100,29 +120,27 @@ namespace Orkidea.Framework.SAP.BusinessOne.Entities.Inventory
         [DataMember]
         public double NumInSale { set; get; }
         /// <summary>
+        /// Bodega por defecto
+        /// </summary>
+        [DataMember]
+        public string DefaultWarehouse { set; get; }
+        /// <summary>
+        /// codigo de impuestos para ventas
+        /// </summary>
+        [DataMember]
+        public string TaxCodeAR { get; set; }
+        /// <summary>
         /// Tipo de gestión del artículo
         /// </summary>
         [DataMember]
         public Gestion Gestionado { set; get; }
-        /// <summary>
-        /// Tipos de gestión que puede tener un artículo
-        /// </summary>    
-        public enum Gestion
-        {
-            /// <summary>
-            /// Artículo gestionado por series
-            /// </summary>
-            Series,
-            /// <summary>
-            /// Artículo gestionado por lotes
-            /// </summary>
-            Lotes,
-            /// <summary>
-            /// Artículo sin método de gestión definido
-            /// </summary>
-            Ninguno
-        }
+
+        #region UDF's
+        [DataMember]
+        public List<UserDefinedField> userDefinedFields { get; set; }
+        #endregion 
         #endregion
+
         #region Constructor
         /// <summary>
         /// Inicia los atributos de la clase
@@ -146,7 +164,8 @@ namespace Orkidea.Framework.SAP.BusinessOne.Entities.Inventory
             this.SalUnitMsr = String.Empty;
             this.SalPackMsr = String.Empty;
             this.NumInSale = 0;
-            this.Gestionado = Gestion.Ninguno;            
+            this.Gestionado = Gestion.Ninguno;
+            this.userDefinedFields = new List<UserDefinedField>();
         }
         #endregion
     }

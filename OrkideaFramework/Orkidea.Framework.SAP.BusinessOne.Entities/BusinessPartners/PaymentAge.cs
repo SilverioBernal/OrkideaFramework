@@ -11,6 +11,8 @@ namespace Orkidea.Framework.SAP.BusinessOne.Entities.BusinessPartners
     public class PaymentAge
     {
         [DataMember]
+        public string seriesName { get; set; }
+        [DataMember]
         public string cardCode { get; set; }
         [DataMember]
         public string cardName { get; set; }
@@ -23,6 +25,8 @@ namespace Orkidea.Framework.SAP.BusinessOne.Entities.BusinessPartners
         [DataMember]
         public double pendingToPay { get; set; }
         [DataMember]
+        public double up15 { get; set; }
+        [DataMember]
         public double up30 { get; set; }
         [DataMember]
         public double up60 { get; set; }
@@ -32,6 +36,9 @@ namespace Orkidea.Framework.SAP.BusinessOne.Entities.BusinessPartners
         public double up120 { get; set; }
         [DataMember]
         public double up9999 { get; set; }
-
+        [DataMember]
+        public double pendingTime { get; set; }
+        [DataMember]
+        public string numAtCard { get; set; }
     }
 }

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.Serialization;
 using Orkidea.Framework.SAP.BusinessOne.Entities.Global.UserDefinedFileds;
+using Orkidea.Framework.SAP.BusinessOne.Entities.Global.Misc;
 
 namespace Orkidea.Framework.SAP.BusinessOne.Entities.MarketingDocuments
 {
@@ -80,6 +81,15 @@ namespace Orkidea.Framework.SAP.BusinessOne.Entities.MarketingDocuments
 
         [DataMember]
         public List<UserDefinedField> userDefinedFields { get; set; }
+
+        [DataMember]
+        public ActionType actionType { get; set; }
+
+        [DataMember]
+        public string transactionInformation { get; set; }
+
+        [DataMember]
+        public int idQueue { get; set; }
         #endregion
         #region Constructor
         /// <summary>

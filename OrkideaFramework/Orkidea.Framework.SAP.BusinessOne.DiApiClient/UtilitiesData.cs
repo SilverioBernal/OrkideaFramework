@@ -281,7 +281,7 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
 
             StringBuilder oSQL = new StringBuilder();
 
-            oSQL.Append("SELECT GroupNum, PymntGroup FROM OCTG ");
+            oSQL.Append("SELECT GroupNum, PymntGroup, extraDays, extraMonth FROM OCTG ");
 
             DbCommand sqlCommand = this.dataBase.GetSqlStringCommand(oSQL.ToString());
 
@@ -292,7 +292,9 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
                     PaymentTerms.Add(new PaymentTerm()
                     {
                         groupNum = int.Parse(this.reader.GetValue(0).ToString()),
-                        pymntGroup = this.reader.GetValue(1).ToString()
+                        pymntGroup = this.reader.GetValue(1).ToString(),
+                        extraDays = int.Parse(this.reader.GetValue(2).ToString()),
+                        extraMonth =  int.Parse(this.reader.GetValue(3).ToString())
                     });
                 }
             }

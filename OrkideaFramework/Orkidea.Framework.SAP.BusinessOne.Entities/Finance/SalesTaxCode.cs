@@ -14,5 +14,7 @@ namespace Orkidea.Framework.SAP.BusinessOne.Entities.Finance
         public string code { get; set; }
         [DataMember]
         public string name { get; set; }
+        [DataMember]
+        public double rate { get; set; }
     }
 }

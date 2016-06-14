@@ -1,4 +1,5 @@
 ﻿using Microsoft.Practices.EnterpriseLibrary.Data;
+using Orkidea.Framework.SAP.BusinessOne.Entities.Global.UserDefinedFileds;
 using Orkidea.Framework.SAP.BusinessOne.Entities.Inventory;
 using System;
 using System.Collections.Generic;
@@ -93,7 +94,7 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
         public Item GetSingle(string itemCode)
         {
             StringBuilder oSQL = new StringBuilder();
-            oSQL.Append("SELECT T0.ItemCode, ItemName ");
+            oSQL.Append("SELECT T0.ItemCode, T0.ItemName, T0.TaxCodeAR, T0.DfltWH ");
             oSQL.Append("FROM OITM T0 ");            
             oSQL.Append(string.Format("where T0.ItemCode = '{0}'", itemCode));
 
@@ -106,7 +107,52 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
                 while (this.reader.Read())
                 {                    
                     item.ItemCode = this.reader.IsDBNull(0) ? "" : this.reader.GetValue(0).ToString();
-                    item.ItemName = this.reader.IsDBNull(1) ? "" : this.reader.GetValue(1).ToString();                    
+                    item.ItemName = this.reader.IsDBNull(1) ? "" : this.reader.GetValue(1).ToString();
+                    item.TaxCodeAR = this.reader.IsDBNull(2) ? "" : this.reader.GetValue(2).ToString();
+                    item.DefaultWarehouse = this.reader.IsDBNull(3) ? "" : this.reader.GetValue(3).ToString();   
+                }
+            }
+            return item;
+        }
+
+        public Item GetSingle(string itemCode, List<UserDefinedField> userDefinedFields)
+        {
+            StringBuilder udf = new StringBuilder();
+            for (int i = 0; i < userDefinedFields.Count(); i++)
+            {
+                if (i.Equals(userDefinedFields.Count() - 1))
+                    udf.Append(string.Format(", {0} ", userDefinedFields[i].name));
+                else
+                    udf.Append(string.Format(", {0}, ", userDefinedFields[i].name));
+                
+            }
+
+            StringBuilder oSQL = new StringBuilder();
+            oSQL.Append(string.Format("SELECT T0.ItemCode, T0.ItemName, T0.TaxCodeAR, T0.DfltWH {0} ", udf.ToString()));
+            oSQL.Append("FROM OITM T0 ");
+            oSQL.Append(string.Format("where T0.ItemCode = '{0}'", itemCode));
+
+            DbCommand dbCommand = this.dataBase.GetSqlStringCommand(oSQL.ToString());
+
+            Item item = new Item();
+
+            using (this.reader = this.dataBase.ExecuteReader(dbCommand))
+            {
+                while (this.reader.Read())
+                {
+                    item.ItemCode = this.reader.IsDBNull(0) ? "" : this.reader.GetValue(0).ToString();
+                    item.ItemName = this.reader.IsDBNull(1) ? "" : this.reader.GetValue(1).ToString();
+                    item.TaxCodeAR = this.reader.IsDBNull(2) ? "" : this.reader.GetValue(2).ToString();
+                    item.DefaultWarehouse = this.reader.IsDBNull(3) ? "" : this.reader.GetValue(3).ToString();
+
+                    int udfItem = 4;
+
+                    for (int i = 0; i < userDefinedFields.Count(); i++)
+                    {
+                        item.userDefinedFields.Add(new UserDefinedField() { name = userDefinedFields[i].name, value = this.reader.IsDBNull(udfItem) ? "" : this.reader.GetValue(udfItem).ToString() });
+                        udfItem++;
+                    }
+
                 }
             }
             return item;

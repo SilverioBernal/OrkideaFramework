@@ -58,10 +58,7 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient.SecurityData
             return true;
         }
 
-        /// <summary>
-        /// Permite Desconectar de SAP Business One despues de realizar las operaciones
-        /// </summary>
-        /// <returns>Bool, Indica el exito de la tarea de desconectar</returns>
+
         public bool DisconnectCompany()
         {
             Conn.company.Disconnect();
@@ -116,13 +113,33 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient.SecurityData
         /// </summary>
         /// <param name="TransOpt">Opción de la transacción</param>
         /// <returns>Estado de la operación</returns>
+        public bool EndTranAndRelease(BoWfTransOpt TransOpt)
+        {
+            if (Conn.company.Connected)
+            {
+                if (Conn.company.InTransaction)
+                    Conn.company.EndTransaction(TransOpt);
+
+                DisconnectCompany();
+                ReleaseCompany();
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Termina una transacción en SAP, exitosa o fallida
+        /// </summary>
+        /// <param name="TransOpt">Opción de la transacción</param>
+        /// <returns>Estado de la operación</returns>
         public bool EndTran(BoWfTransOpt TransOpt)
         {
             if (Conn.company.Connected)
+            {
                 if (Conn.company.InTransaction)
                     Conn.company.EndTransaction(TransOpt);
+            }
             return true;
-        } 
+        }
         #endregion
     }
 }

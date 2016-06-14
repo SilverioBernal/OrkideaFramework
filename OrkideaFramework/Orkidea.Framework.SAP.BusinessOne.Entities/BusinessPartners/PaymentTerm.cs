@@ -12,7 +12,14 @@ namespace Orkidea.Framework.SAP.BusinessOne.Entities.BusinessPartners
     {
         [DataMember]
         public int groupNum { get; set; }
+        
         [DataMember]
         public string pymntGroup { get; set; }
+
+        [DataMember]
+        public int extraDays { get; set; }
+
+        [DataMember]
+        public int extraMonth { get; set; }
     }
 }

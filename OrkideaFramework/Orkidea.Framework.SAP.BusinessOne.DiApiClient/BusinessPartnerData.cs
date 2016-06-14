@@ -110,6 +110,92 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
             return partners;
         }
 
+        public List<GenericBusinessPartner> GetList(CardType cardType, string[] cardCodes)
+        {
+            StringBuilder oSQL = new StringBuilder();
+            oSQL.Append("SELECT  CardCode, CardName, listNum FROM OCRD T0 ");
+
+            StringBuilder cardCodeTarget = new StringBuilder();
+
+            for (int i = 0; i < cardCodes.Length; i++)
+            {
+                if (i.Equals(cardCodes.Length - 1))
+                    cardCodeTarget.Append(string.Format("'{0}'", cardCodes[i]));
+                else
+                    cardCodeTarget.Append(string.Format("'{0}', ", cardCodes[i]));
+            }
+
+            switch (cardType)
+            {
+                case CardType.Customer:
+                    oSQL.Append(string.Format("where CardType = '{0}' and  WtLiable= 'Y'  and cardcode in ({1}) ", "C", cardCodeTarget.ToString()));
+                    break;
+                case CardType.Supplier:
+                    oSQL.Append(string.Format("where CardType = '{0}' and  WtLiable= 'Y'  and cardcode in ({1}) ", "S", cardCodeTarget.ToString()));
+                    break;
+                case CardType.Lead:
+                    oSQL.Append(string.Format("where CardType = '{0}'  and cardcode in ({1}) ", "L", cardCodeTarget.ToString()));
+                    break;
+                default:
+                    break;
+            }
+
+            DbCommand myCommand = this.dataBase.GetSqlStringCommand(oSQL.ToString());
+
+            List<GenericBusinessPartner> partners = new List<GenericBusinessPartner>();
+
+            using (this.reader = this.dataBase.ExecuteReader(myCommand))
+            {
+                while (this.reader.Read())
+                {
+                    GenericBusinessPartner partner = new GenericBusinessPartner();
+                    partner.cardCode = this.reader.IsDBNull(0) ? "" : this.reader.GetValue(0).ToString();
+                    partner.cardName = this.reader.IsDBNull(1) ? "" : this.reader.GetValue(1).ToString();
+                    partner.listNum = this.reader.IsDBNull(1) ? 1 : int.Parse(this.reader.GetValue(2).ToString());
+                    partners.Add(partner);
+                }
+            }
+            return partners;
+        }
+
+        public List<GenericBusinessPartner> GetList(CardType cardType, string slpCode)
+        {
+            StringBuilder oSQL = new StringBuilder();
+            oSQL.Append("SELECT  CardCode, CardName, listNum FROM OCRD T0 ");
+
+            switch (cardType)
+            {
+                case CardType.Customer:
+                    oSQL.Append(string.Format("where CardType = '{0}' and  WtLiable= 'Y' and slpCode = {1} ", "C", slpCode));
+                    break;
+                case CardType.Supplier:
+                    oSQL.Append(string.Format("where CardType = '{0}' and  WtLiable= 'Y' and slpCode = {1} ", "S", slpCode));
+                    break;
+                case CardType.Lead:
+                    oSQL.Append(string.Format("where CardType = '{0}'  and slpCode = {1} ", "L", slpCode));
+                    break;
+                default:
+                    break;
+            }
+
+            DbCommand myCommand = this.dataBase.GetSqlStringCommand(oSQL.ToString());
+
+            List<GenericBusinessPartner> partners = new List<GenericBusinessPartner>();
+
+            using (this.reader = this.dataBase.ExecuteReader(myCommand))
+            {
+                while (this.reader.Read())
+                {
+                    GenericBusinessPartner partner = new GenericBusinessPartner();
+                    partner.cardCode = this.reader.IsDBNull(0) ? "" : this.reader.GetValue(0).ToString();
+                    partner.cardName = this.reader.IsDBNull(1) ? "" : this.reader.GetValue(1).ToString();
+                    partner.listNum = this.reader.IsDBNull(1) ? 1 : int.Parse(this.reader.GetValue(2).ToString());
+                    partners.Add(partner);
+                }
+            }
+            return partners;
+        }
+
         public List<ContactEmployee> GetContactList(string cardCode)
         {
             StringBuilder oSQL = new StringBuilder();
@@ -230,14 +316,55 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
 
         public List<PaymentAge> GetPaymentAgeList(string cardCode)
         {
+            string today = DateTime.Now.ToString("yyyy-MM-dd");
+
             StringBuilder oSQL = new StringBuilder();
-            oSQL.Append("select CardCode,cardName,DocNum,DocDate,DocDueDate,DocTotal - PaidToDate pending, ");
-            oSQL.Append("CASE when DATEDIFF(dd,DocDueDate,getdate()) <= 30 then DocTotal - PaidToDate else 0 End c30, ");
-            oSQL.Append("CASE when DATEDIFF(dd,DocDueDate,getdate()) between 31 and 60 then DocTotal - PaidToDate else 0 End c60, ");
-            oSQL.Append("CASE when DATEDIFF(dd,DocDueDate,getdate()) between 61 and 90 then DocTotal - PaidToDate else 0 End c90, ");
-            oSQL.Append("CASE when DATEDIFF(dd,DocDueDate,getdate()) between 91 and 120 then DocTotal - PaidToDate else 0 End c120, ");
-            oSQL.Append("CASE when DATEDIFF(dd,DocDueDate,getdate()) > 120 then DocTotal - PaidToDate else 0 End c121 ");
-            oSQL.Append(string.Format("from OINV a where a.cardcode = '{0}' and PaidToDate != DocTotal", cardCode));
+            oSQL.Append("select case when transType = -3 then 'CB' when transType = 13 then 'FA' when transType = 14 then 'RC' when transType = 15 then 'NE' when transType = 16 then 'DV' when transType = 18 then 'TT' ");
+            oSQL.Append("when transType = 19 then 'TP' when transType = 20 then 'EP' when transType = 21 then 'DM' when transType = 24 then 'PR' when transType = 25 then 'DP' when transType = 30 then 'AS' ");
+            oSQL.Append("when transType = 46 then 'PP' when transType = 59 then 'EM' when transType = 60 then 'SM' when transType = 67 then 'IM' when transType = 69 then 'DI' when transType = 162 then 'RI' ");
+            oSQL.Append("when transType = 202 then 'OF' when transType = 204 then 'AN' when transType = 321 then 'ID' end seriesName, ");
+            oSQL.Append(string.Format("docNum, '{0}' cardCode, (select cardname from ocrd where cardcode = '{1}') cardName, ", cardCode, cardCode));
+            oSQL.Append("refDate docDate, dueDate docDueDate, -balDueCred pendingToPay, DATEDIFF(dd,dueDate,getdate()) pendingTime, numAtCard, ");
+            oSQL.Append("CASE when DATEDIFF(dd,dueDate,getdate()) <= 15 then -balDueCred else 0 End c15, ");
+            oSQL.Append("CASE when DATEDIFF(dd,dueDate,getdate()) between 16 and 30 then -balDueCred else 0 End c30, ");
+            oSQL.Append("CASE when DATEDIFF(dd,dueDate,getdate()) between 31 and 60 then -balDueCred else 0 End c60, ");
+            oSQL.Append("CASE when DATEDIFF(dd,dueDate,getdate()) between 61 and 90 then -balDueCred else 0 End c90, ");
+            oSQL.Append("CASE when DATEDIFF(dd,dueDate,getdate()) between 91 and 120 then -balDueCred else 0 End c120, ");
+            oSQL.Append("CASE when DATEDIFF(dd,dueDate,getdate()) > 120 then -balDueCred else 0 End c121 ");
+            oSQL.Append("from (SELECT MAX(T0.[TransType])transType, MAX(T0.[BaseRef]) docNum, MAX(T0.[RefDate]) refDate, MAX(T0.[DueDate]) dueDate, ");
+            oSQL.Append("MAX(T0.[BalDueCred]) + SUM(T1.[ReconSum]) BalDueCred, MAX(T0.[LineMemo]) LineMemo, MAX(T5.[NumAtCard]) numAtCard, MAX(T4.[DunTerm]) DunTerm ");
+            oSQL.Append("FROM  [dbo].[JDT1] T0  ");
+            oSQL.Append("INNER  JOIN [dbo].[ITR1] T1  ON  T1.[TransId] = T0.[TransId]  AND  T1.[TransRowId] = T0.[Line_ID]   ");
+            oSQL.Append("INNER  JOIN [dbo].[OITR] T2  ON  T2.[ReconNum] = T1.[ReconNum]   ");
+            oSQL.Append("INNER  JOIN [dbo].[OJDT] T3  ON  T3.[TransId] = T0.[TransId]   ");
+            oSQL.Append("INNER  JOIN [dbo].[OCRD] T4  ON  T4.[CardCode] = T0.[ShortName]    ");
+            oSQL.Append("LEFT OUTER  JOIN [dbo].[B1_JournalTransSourceView] T5  ON  T5.[ObjType] = T0.[TransType]  AND  T5.[DocEntry] = T0.[CreatedBy]  ");
+            oSQL.Append("AND  (T5.[TransType] <> 'I'  OR  (T5.[TransType] = 'I'  AND  T5.[InstlmntID] = T0.[SourceLine] ))  ");
+            oSQL.Append(string.Format("WHERE T0.[RefDate] <= ('{0}')   AND  T4.[CardType] = 'C'  AND  T4.[Balance] <> 0  AND  T4.[CardCode] = ('{1}') AND  T2.[ReconDate] > ('{2}')  AND  T1.[IsCredit] = 'C'   ", today, cardCode, today));
+            oSQL.Append("GROUP BY T0.[TransId], T0.[Line_ID], T0.[BPLName] HAVING MAX(T0.[BalFcCred]) <>- SUM(T1.[ReconSumFC])  OR  MAX(T0.[BalDueCred]) <>- SUM(T1.[ReconSum])   ");
+            oSQL.Append("UNION ALL ");
+            oSQL.Append("SELECT MAX(T0.[TransType]), MAX(T0.[BaseRef]), MAX(T0.[RefDate]), MAX(T0.[DueDate]), - MAX(T0.[BalDueDeb]) - SUM(T1.[ReconSum]), MAX(T0.[LineMemo]), MAX(T5.[NumAtCard]), MAX(T4.[DunTerm]) ");
+            oSQL.Append("FROM  [dbo].[JDT1] T0  ");
+            oSQL.Append("INNER  JOIN [dbo].[ITR1] T1  ON  T1.[TransId] = T0.[TransId]  AND  T1.[TransRowId] = T0.[Line_ID]   ");
+            oSQL.Append("INNER  JOIN [dbo].[OITR] T2  ON  T2.[ReconNum] = T1.[ReconNum]   ");
+            oSQL.Append("INNER  JOIN [dbo].[OJDT] T3  ON  T3.[TransId] = T0.[TransId]   ");
+            oSQL.Append("INNER  JOIN [dbo].[OCRD] T4  ON  T4.[CardCode] = T0.[ShortName]    ");
+            oSQL.Append("LEFT OUTER  JOIN [dbo].[B1_JournalTransSourceView] T5  ON  T5.[ObjType] = T0.[TransType]  AND  T5.[DocEntry] = T0.[CreatedBy]  ");
+            oSQL.Append("AND  (T5.[TransType] <> 'I'  OR  (T5.[TransType] = 'I'  AND  T5.[InstlmntID] = T0.[SourceLine] ))  ");
+            oSQL.Append(string.Format("WHERE T0.[RefDate] <= ('{0}') AND  T4.[CardType] = 'C'  AND  T4.[Balance] <> 0  AND  T4.[CardCode] = ('{1}')  AND  T2.[ReconDate] > ('{2}')  AND  T1.[IsCredit] = 'D'   ", today, cardCode, today));
+            oSQL.Append("GROUP BY T0.[TransId], T0.[Line_ID], T0.[BPLName] HAVING MAX(T0.[BalFcDeb]) <>- SUM(T1.[ReconSumFC])  OR  MAX(T0.[BalDueDeb]) <>- SUM(T1.[ReconSum])   ");
+            oSQL.Append("UNION ALL ");
+            oSQL.Append("SELECT MAX(T0.[TransType]), MAX(T0.[BaseRef]), MAX(T0.[RefDate]), MAX(T0.[DueDate]), MAX(T0.[BalDueCred]) - MAX(T0.[BalDueDeb]), MAX(T0.[LineMemo]), MAX(T3.[NumAtCard]), MAX(T2.[DunTerm]) ");
+            oSQL.Append("FROM  [dbo].[JDT1] T0  ");
+            oSQL.Append("INNER  JOIN [dbo].[OJDT] T1  ON  T1.[TransId] = T0.[TransId]   ");
+            oSQL.Append("INNER  JOIN [dbo].[OCRD] T2  ON  T2.[CardCode] = T0.[ShortName]    ");
+            oSQL.Append("LEFT OUTER  JOIN [dbo].[B1_JournalTransSourceView] T3  ON  T3.[ObjType] = T0.[TransType]  AND  T3.[DocEntry] = T0.[CreatedBy]  ");
+            oSQL.Append("AND  (T3.[TransType] <> 'I'  OR  (T3.[TransType] = 'I'  AND  T3.[InstlmntID] = T0.[SourceLine] ))  ");
+            oSQL.Append(string.Format("WHERE T0.[RefDate] <= ('{0}')  AND  T2.[CardType] = 'C'  AND  T2.[Balance] <> 0  AND  T2.[CardCode] = ('{1}')  ", today, cardCode));
+            oSQL.Append("AND  (T0.[BalDueCred] <> T0.[BalDueDeb]  OR  T0.[BalFcCred] <> T0.[BalFcDeb] ) ");
+            oSQL.Append("AND NOT EXISTS (SELECT U0.[TransId], U0.[TransRowId] FROM  [dbo].[ITR1] U0  INNER  JOIN [dbo].[OITR] U1  ON  U1.[ReconNum] = U0.[ReconNum] ");
+            oSQL.Append(string.Format("WHERE T0.[TransId] = U0.[TransId]  AND  T0.[Line_ID] = U0.[TransRowId]  AND  U1.[ReconDate] > ('{0}')   GROUP BY U0.[TransId], U0.[TransRowId])   ", today));
+            oSQL.Append("GROUP BY T0.[TransId], T0.[Line_ID], T0.[BPLName]) a ");
 
             DbCommand myCommand = this.dataBase.GetSqlStringCommand(oSQL.ToString());
 
@@ -248,17 +375,62 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
                 while (this.reader.Read())
                 {
                     PaymentAge document = new PaymentAge();
-                    document.cardCode = this.reader.IsDBNull(0) ? "" : this.reader.GetValue(0).ToString();
-                    document.cardName = this.reader.IsDBNull(1) ? "" : this.reader.GetValue(1).ToString();
-                    document.docNum = this.reader.IsDBNull(2) ? "" : this.reader.GetValue(2).ToString();
-                    document.docDate = DateTime.Parse(this.reader.GetValue(3).ToString()).ToString("yyyy-MM-dd");
-                    document.docDueDate = DateTime.Parse(this.reader.GetValue(4).ToString()).ToString("yyyy-MM-dd");
-                    document.pendingToPay = this.reader.IsDBNull(5) ? 0 : double.Parse( this.reader.GetValue(5).ToString());
-                    document.up30 = this.reader.IsDBNull(6) ? 0 : double.Parse(this.reader.GetValue(6).ToString());
-                    document.up60 = this.reader.IsDBNull(7) ? 0 : double.Parse(this.reader.GetValue(7).ToString());
-                    document.up90 = this.reader.IsDBNull(8) ? 0 : double.Parse(this.reader.GetValue(8).ToString());
-                    document.up120 = this.reader.IsDBNull(9) ? 0 : double.Parse(this.reader.GetValue(9).ToString());
-                    document.up9999 = this.reader.IsDBNull(10) ? 0 : double.Parse(this.reader.GetValue(10).ToString());
+                    document.seriesName = this.reader.IsDBNull(0) ? "" : this.reader.GetValue(0).ToString();
+                    document.docNum = this.reader.IsDBNull(1) ? "" : this.reader.GetValue(1).ToString();
+                    document.cardCode = this.reader.IsDBNull(2) ? "" : this.reader.GetValue(2).ToString();
+                    document.cardName = this.reader.IsDBNull(3) ? "" : this.reader.GetValue(3).ToString();
+                    document.docDate = DateTime.Parse(this.reader.GetValue(4).ToString()).ToString("yyyy-MM-dd");
+                    document.docDueDate = DateTime.Parse(this.reader.GetValue(5).ToString()).ToString("yyyy-MM-dd");
+                    document.pendingToPay = this.reader.IsDBNull(6) ? 0 : double.Parse(this.reader.GetValue(6).ToString());
+                    document.pendingTime = this.reader.IsDBNull(7) ? 0 : double.Parse(this.reader.GetValue(7).ToString());
+                    document.numAtCard = this.reader.IsDBNull(8) ? "" : this.reader.GetValue(8).ToString();
+                    document.up15 = this.reader.IsDBNull(9) ? 0 : double.Parse(this.reader.GetValue(9).ToString());
+                    document.up30 = this.reader.IsDBNull(10) ? 0 : double.Parse(this.reader.GetValue(10).ToString());
+                    document.up60 = this.reader.IsDBNull(11) ? 0 : double.Parse(this.reader.GetValue(11).ToString());
+                    document.up90 = this.reader.IsDBNull(12) ? 0 : double.Parse(this.reader.GetValue(12).ToString());
+                    document.up120 = this.reader.IsDBNull(13) ? 0 : double.Parse(this.reader.GetValue(13).ToString());
+                    document.up9999 = this.reader.IsDBNull(14) ? 0 : double.Parse(this.reader.GetValue(14).ToString());
+
+                    documents.Add(document);
+                }
+            }
+            return documents;
+        }
+
+        public List<PaymentAge> GetInvoicePaymentAgeList(string cardCode)
+        {
+            StringBuilder oSQL = new StringBuilder();
+            oSQL.Append("select seriesName, docNum, CardCode,cardName,DocDate,DocDueDate,DocTotal - PaidToDate pendingToPay, DATEDIFF(dd,DocDueDate,getdate()) pendingTime, numAtCard, ");
+            oSQL.Append("CASE when DATEDIFF(dd,DocDueDate,getdate()) <= 30 then DocTotal - PaidToDate else 0 End c30, ");
+            oSQL.Append("CASE when DATEDIFF(dd,DocDueDate,getdate()) between 31 and 60 then DocTotal - PaidToDate else 0 End c60, ");
+            oSQL.Append("CASE when DATEDIFF(dd,DocDueDate,getdate()) between 61 and 90 then DocTotal - PaidToDate else 0 End c90, ");
+            oSQL.Append("CASE when DATEDIFF(dd,DocDueDate,getdate()) between 91 and 120 then DocTotal - PaidToDate else 0 End c120, ");
+            oSQL.Append("CASE when DATEDIFF(dd,DocDueDate,getdate()) > 120 then DocTotal - PaidToDate else 0 End c121 ");
+            oSQL.Append(string.Format("from OINV a inner join NNM1 b on a.series = b.series where a.cardcode = '{0}' and PaidToDate != DocTotal", cardCode));
+
+            DbCommand myCommand = this.dataBase.GetSqlStringCommand(oSQL.ToString());
+
+            List<PaymentAge> documents = new List<PaymentAge>();
+
+            using (this.reader = this.dataBase.ExecuteReader(myCommand))
+            {
+                while (this.reader.Read())
+                {
+                    PaymentAge document = new PaymentAge();
+                    document.seriesName = this.reader.IsDBNull(0) ? "" : this.reader.GetValue(0).ToString();
+                    document.docNum = this.reader.IsDBNull(1) ? "" : this.reader.GetValue(1).ToString();
+                    document.cardCode = this.reader.IsDBNull(2) ? "" : this.reader.GetValue(2).ToString();
+                    document.cardName = this.reader.IsDBNull(3) ? "" : this.reader.GetValue(3).ToString();
+                    document.docDate = DateTime.Parse(this.reader.GetValue(4).ToString()).ToString("yyyy-MM-dd");
+                    document.docDueDate = DateTime.Parse(this.reader.GetValue(5).ToString()).ToString("yyyy-MM-dd");
+                    document.pendingToPay = this.reader.IsDBNull(6) ? 0 : double.Parse(this.reader.GetValue(6).ToString());
+                    document.pendingTime = this.reader.IsDBNull(7) ? 0 : double.Parse(this.reader.GetValue(7).ToString());
+                    document.numAtCard = this.reader.IsDBNull(8) ? "" : this.reader.GetValue(8).ToString();
+                    document.up30 = this.reader.IsDBNull(9) ? 0 : double.Parse(this.reader.GetValue(9).ToString());
+                    document.up60 = this.reader.IsDBNull(10) ? 0 : double.Parse(this.reader.GetValue(10).ToString());
+                    document.up90 = this.reader.IsDBNull(11) ? 0 : double.Parse(this.reader.GetValue(11).ToString());
+                    document.up120 = this.reader.IsDBNull(12) ? 0 : double.Parse(this.reader.GetValue(12).ToString());
+                    document.up9999 = this.reader.IsDBNull(13) ? 0 : double.Parse(this.reader.GetValue(13).ToString());
 
                     documents.Add(document);
                 }
@@ -270,7 +442,7 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
         {
             StringBuilder oSQL = new StringBuilder();
             oSQL.Append("select GroupCode, GroupName from OCQG order by GroupCode ");
-            
+
             DbCommand myCommand = this.dataBase.GetSqlStringCommand(oSQL.ToString());
 
             List<BusinessPartnerProp> bpProps = new List<BusinessPartnerProp>();
@@ -282,7 +454,7 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
                     BusinessPartnerProp prop = new BusinessPartnerProp();
                     prop.groupCode = int.Parse(this.reader.GetValue(0).ToString());
                     prop.groupName = this.reader.GetValue(1).ToString();
-                    
+
                     bpProps.Add(prop);
                 }
             }
@@ -292,12 +464,13 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
         public List<ItemPrice> GetBusinessPartnerLastPricesList(string cardCode, DateTime from, DateTime to)
         {
             StringBuilder oSQL = new StringBuilder();
-            oSQL.Append("select distinct b.ItemCode, c.ItemName, b.Price from ordr a ");
+            oSQL.Append("select distinct a.DocDate, b.ItemCode, c.ItemName, sum(b.Quantity) Quantity, b.Price from ordr a ");
             oSQL.Append("inner join RDR1 b on a.DocEntry = b.DocEntry ");
             oSQL.Append("inner join OITM c on b.ItemCode = c.ItemCode ");
             oSQL.Append(string.Format("where a.cardcode = '{0}' ", cardCode));
             oSQL.Append(string.Format("and a.DocDate between '{0}' and '{1}' ", from.ToString("yyyy-MM-dd"), to.ToString("yyyy-MM-dd")));
-            oSQL.Append("order by b.ItemCode, Price ");
+            oSQL.Append("group by a.DocDate, b.ItemCode, c.ItemName, b.Price ");
+            oSQL.Append("order by a.DocDate desc, b.ItemCode");
 
             DbCommand myCommand = this.dataBase.GetSqlStringCommand(oSQL.ToString());
 
@@ -308,9 +481,11 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
                 while (this.reader.Read())
                 {
                     ItemPrice price = new ItemPrice();
-                    price.itemCode = this.reader.GetValue(0).ToString();
-                    price.itemName = this.reader.GetValue(1).ToString();
-                    price.price = double.Parse(this.reader.GetValue(2).ToString());
+                    price.docDate = DateTime.Parse(this.reader.GetValue(0).ToString()).ToString("yyyy-MM-dd");
+                    price.itemCode = this.reader.GetValue(1).ToString();
+                    price.itemName = this.reader.GetValue(2).ToString();
+                    price.quantity = double.Parse(this.reader.GetValue(3).ToString());
+                    price.price = double.Parse(this.reader.GetValue(4).ToString());
 
                     prices.Add(price);
                 }
@@ -336,15 +511,15 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
             oSQL.Append(",QryGroup31,QryGroup32,QryGroup33,QryGroup34,QryGroup35,QryGroup36,QryGroup37,QryGroup38,QryGroup39,QryGroup40 ");
             oSQL.Append(",QryGroup41,QryGroup42,QryGroup43,QryGroup44,QryGroup45,QryGroup46,QryGroup47,QryGroup48,QryGroup49,QryGroup50 ");
             oSQL.Append(",QryGroup51,QryGroup52,QryGroup53,QryGroup54,QryGroup55,QryGroup56,QryGroup57,QryGroup58,QryGroup59,QryGroup60 ");
-            oSQL.Append(",QryGroup61,QryGroup62,QryGroup63,QryGroup64 ");
-            oSQL.Append(",Free_Text ");
+            oSQL.Append(",QryGroup61,QryGroup62,QryGroup63,QryGroup64,Free_Text ");
+            oSQL.Append(",ISNULL(Balance, 0) Balance, ISNULL(DNotesBal, 0) DNotesBal, ISNULL(OrdersBal, 0) OrdersBal");
 
             foreach (UserDefinedField item in ocrdUdfs)
             {
                 oSQL.Append(string.Format(", U_{0} ", item.name));
             }
 
-            oSQL.Append("FROM OCRD ");
+            oSQL.Append("FROM OCRD with (nolock) ");
             oSQL.Append("WHERE cardCode = @CardCode ");
 
             DbCommand myCommand = this.dataBase.GetSqlStringCommand(oSQL.ToString());
@@ -364,6 +539,8 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
                     partner.groupCode = int.Parse(this.reader.GetValue(4).ToString());
                     partner.licTradNum = this.reader.IsDBNull(5) ? "" : this.reader.GetValue(5).ToString();
                     partner.currency = this.reader.IsDBNull(6) ? "" : this.reader.GetValue(6).ToString();
+                    partner.dNotesBal = this.reader.IsDBNull(94) ? 0 : double.Parse(this.reader.GetValue(94).ToString());
+                    partner.ordersBal = this.reader.IsDBNull(95) ? 0 : double.Parse(this.reader.GetValue(95).ToString());
                     #endregion
 
                     #region General tab
@@ -388,12 +565,13 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
                     partner.creditLine = this.reader.IsDBNull(22) ? 0 : double.Parse(this.reader.GetValue(22).ToString());
                     partner.debitLine = this.reader.IsDBNull(23) ? 0 : double.Parse(this.reader.GetValue(23).ToString());
                     partner.dunTerm = this.reader.IsDBNull(24) ? "" : this.reader.GetValue(24).ToString();
+                    partner.balance = this.reader.IsDBNull(93) ? 0 : double.Parse(this.reader.GetValue(93).ToString());
                     #endregion
 
                     #region Accounting tab
                     #region general subtab
                     partner.debPayAcct = this.reader.IsDBNull(25) ? "" : this.reader.GetValue(25).ToString();
-                    partner.blockDunn = this.reader.IsDBNull(26) ? false:(this.reader.GetValue(26).ToString()=="Y"? true:false);
+                    partner.blockDunn = this.reader.IsDBNull(26) ? false : (this.reader.GetValue(26).ToString() == "Y" ? true : false);
                     #endregion
 
                     #region tax subtab
@@ -473,7 +651,7 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
                     #endregion
 
                     #region UDF's
-                    int currentField = 93;
+                    int currentField = 96;
                     foreach (UserDefinedField item in ocrdUdfs)
                     {
                         item.value = this.reader.IsDBNull(currentField) ? "" : this.reader.GetValue(currentField).ToString();
@@ -485,7 +663,45 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
                 }
             }
             return partner;
-        }        
+        }
+
+        public bool GetCreditStatus(string cardCode)
+        {
+            int hits = 0;
+            StringBuilder oSQL = new StringBuilder();
+            oSQL.Append("select CASE When DATEDIFF(DD, a.DocDueDate, GETDATE()) > c.ExtraDays then 1 when DATEDIFF(DD, a.DocDueDate, GETDATE()) <= c.ExtraDays then 0 else 0 end delayed ");
+            oSQL.Append("from OINV a inner join OCRD b on a.CardCode = b.CardCode inner join OCTG c on b.GroupNum = c.GroupNum ");
+            oSQL.Append(string.Format("where a.cardcode = '{0}' ", cardCode));
+
+            DbCommand myCommand = this.dataBase.GetSqlStringCommand(oSQL.ToString());
+
+
+            using (this.reader = this.dataBase.ExecuteReader(myCommand))
+            {
+                while (this.reader.Read())
+                {
+                    if (double.Parse(this.reader.GetValue(0).ToString()) > 0)
+                        hits++;
+                }
+            }
+
+            return hits > 0 ? true : false;
+        }
+
+        public int GetOldestOpenInvoice(string cardCode)
+        {
+            StringBuilder oSQL = new StringBuilder();
+            oSQL.Append(string.Format("select MAX(DATEDIFF(DD, DocDate, GETDATE())) From OINV a Where CardCode = '{0}' and DocStatus = 'O' ", cardCode));
+
+            DbCommand dbCommand = this.dataBase.GetSqlStringCommand(oSQL.ToString());
+
+            int invoice = 0;
+
+            if (!int.TryParse(this.dataBase.ExecuteScalar(dbCommand).ToString(), out invoice))
+                invoice = -1;
+
+            return invoice;
+        }
 
         public void Add(BusinessPartner partner)
         {
@@ -498,7 +714,7 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
             switch (partner.cardType)
             {
                 case CardType.Customer:
-                    bp.CardType = BoCardTypes.cCustomer;                    
+                    bp.CardType = BoCardTypes.cCustomer;
                     break;
                 case CardType.Supplier:
                     bp.CardType = BoCardTypes.cSupplier;
@@ -840,7 +1056,7 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
             #region tax subtab
             if (partner.wtLiable)
             {
-                bp.SubjectToWithholdingTax = BoYesNoEnum.tYES;                
+                bp.SubjectToWithholdingTax = BoYesNoEnum.tYES;
             }
             #endregion
             #endregion
@@ -949,7 +1165,7 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
             #endregion
 
             if (bp.Add() != 0)
-                throw new SAPException(sapConn.company.GetLastErrorCode(), sapConn.company.GetLastErrorDescription());           
+                throw new SAPException(sapConn.company.GetLastErrorCode(), sapConn.company.GetLastErrorDescription());
         }
 
         public void AddAddress(BusinessPartnerAddress address)
@@ -994,7 +1210,7 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
                 bp.Addresses.State = address.state;
 
             #region UDF's
-            if (address.UserDefinedFields!= null)
+            if (address.UserDefinedFields != null)
                 foreach (UserDefinedField item in address.UserDefinedFields)
                 {
                     if (!string.IsNullOrEmpty(item.value))
@@ -1024,7 +1240,7 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
                 }
             #endregion
 
-            bp.Update();          
+            bp.Update();
         }
 
         public void AddAddress(BusinessPartnerAddress address, SAPConnection sapConn)
@@ -1115,7 +1331,7 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
             bp.ContactEmployees.Add();
             bp.ContactEmployees.SetCurrentLine(contactQty);
             bp.ContactEmployees.Name = contact.name;
-            
+
             if (!string.IsNullOrEmpty(contact.firstName))
                 bp.ContactEmployees.FirstName = contact.firstName;
 
@@ -1130,19 +1346,19 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
 
             if (!string.IsNullOrEmpty(contact.position))
                 bp.ContactEmployees.Position = contact.position;
-            
+
             if (!string.IsNullOrEmpty(contact.address))
                 bp.ContactEmployees.Address = contact.address;
-            
+
             if (!string.IsNullOrEmpty(contact.telephone1))
                 bp.ContactEmployees.Phone1 = contact.telephone1;
-            
+
             if (!string.IsNullOrEmpty(contact.telephone2))
                 bp.ContactEmployees.Phone2 = contact.telephone2;
-            
+
             if (!string.IsNullOrEmpty(contact.cellolar))
                 bp.ContactEmployees.MobilePhone = contact.cellolar;
-            
+
             if (!string.IsNullOrEmpty(contact.e_mail))
                 bp.ContactEmployees.E_Mail = contact.e_mail;
 
@@ -1197,7 +1413,7 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
         }
 
         public void AddBusinessPartnerWithholdingTax(BusinessPartnerWithholdingTax withholdingTax)
-        {        
+        {
             List<BusinessPartnerWithholdingTax> bpWithholdingTaxes = GetBusinessPartnerWithholdingTaxList(withholdingTax.cardCode);
 
             BusinessPartners bp; //= new BusinessPartners();
@@ -1237,7 +1453,7 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
 
             bp.GetByKey(partner.cardCode);
 
-            #region Basic Data            
+            #region Basic Data
             //switch (partner.cardType)
             //{
             //    case CardType.Customer:
@@ -1314,7 +1530,7 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
             #region tax subtab
             if (partner.wtLiable)
             {
-                bp.SubjectToWithholdingTax = BoYesNoEnum.tYES;                
+                bp.SubjectToWithholdingTax = BoYesNoEnum.tYES;
             }
             #endregion
             #endregion
@@ -1431,11 +1647,11 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
             BusinessPartners bp; //= new BusinessPartners();
             bp = (BusinessPartners)sapConn.company.GetBusinessObject(BoObjectTypes.oBusinessPartners);
 
-            
-            if(!bp.GetByKey(partner.cardCode))
-                throw new SAPException(-9000, "Socio no encontrado");           
 
-            #region Basic Data            
+            if (!bp.GetByKey(partner.cardCode))
+                throw new SAPException(-9000, "Socio no encontrado");
+
+            #region Basic Data
             bp.CardName = partner.cardName;
 
             if (!string.IsNullOrEmpty(partner.cardFName))
@@ -1486,7 +1702,7 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
                 bp.MaxCommitment = (double)partner.debitLine;
             if (!string.IsNullOrEmpty(partner.dunTerm))
                 bp.DunningTerm = partner.dunTerm;
-            #endregion            
+            #endregion
 
             #region Propierties tab
             bp.set_Properties(1, partner.qryGroup1 ? BoYesNoEnum.tYES : BoYesNoEnum.tNO);
@@ -1592,7 +1808,7 @@ namespace Orkidea.Framework.SAP.BusinessOne.DiApiClient
             #endregion
 
             if (bp.Update() != 0)
-                throw new SAPException(sapConn.company.GetLastErrorCode(), sapConn.company.GetLastErrorDescription());           
+                throw new SAPException(sapConn.company.GetLastErrorCode(), sapConn.company.GetLastErrorDescription());
         }
         #endregion
     }
