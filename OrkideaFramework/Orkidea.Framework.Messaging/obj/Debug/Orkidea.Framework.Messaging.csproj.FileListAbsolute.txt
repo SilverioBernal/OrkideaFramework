@@ -1,0 +1,4 @@
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.Messaging\bin\Debug\Orkidea.Framework.Messaging.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.Messaging\bin\Debug\Orkidea.Framework.Messaging.pdb
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.Messaging\obj\Debug\Orkidea.Framework.Messaging.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.Messaging\obj\Debug\Orkidea.Framework.Messaging.pdb

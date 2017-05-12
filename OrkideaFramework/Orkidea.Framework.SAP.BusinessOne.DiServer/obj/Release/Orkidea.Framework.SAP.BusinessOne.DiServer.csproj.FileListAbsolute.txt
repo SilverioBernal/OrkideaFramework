@@ -1,0 +1,9 @@
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.DiServer\obj\Release\Orkidea.Framework.SAP.BusinessOne.DiServer.csprojResolveAssemblyReference.cache
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.DiServer\obj\Release\Interop.SBODI_Server.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.DiServer\obj\Release\Orkidea.Framework.SAP.BusinessOne.DiServer.csproj.ResolveComReference.cache
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.DiServer\bin\Release\Orkidea.Framework.SAP.BusinessOne.DiServer.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.DiServer\bin\Release\Orkidea.Framework.SAP.BusinessOne.DiServer.pdb
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.DiServer\bin\Release\Orkidea.Framework.SAP.BusinessOne.Entities.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.DiServer\bin\Release\Orkidea.Framework.SAP.BusinessOne.Entities.pdb
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.DiServer\obj\Release\Orkidea.Framework.SAP.BusinessOne.DiServer.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.DiServer\obj\Release\Orkidea.Framework.SAP.BusinessOne.DiServer.pdb

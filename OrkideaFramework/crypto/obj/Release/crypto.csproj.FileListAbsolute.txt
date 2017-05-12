@@ -1,0 +1,11 @@
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\crypto\bin\Release\crypto.exe.config
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\crypto\obj\Release\crypto.csprojResolveAssemblyReference.cache
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\crypto\obj\Release\crypto.Form1.resources
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\crypto\obj\Release\crypto.Properties.Resources.resources
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\crypto\obj\Release\crypto.csproj.GenerateResource.Cache
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\crypto\bin\Release\crypto.exe
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\crypto\bin\Release\crypto.pdb
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\crypto\bin\Release\Orkidea.Framework.Security.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\crypto\bin\Release\Orkidea.Framework.Security.pdb
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\crypto\obj\Release\crypto.exe
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\crypto\obj\Release\crypto.pdb

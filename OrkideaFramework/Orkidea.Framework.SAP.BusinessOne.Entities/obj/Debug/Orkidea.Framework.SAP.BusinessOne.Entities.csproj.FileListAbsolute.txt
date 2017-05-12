@@ -1,0 +1,4 @@
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.Entities\bin\Debug\Orkidea.Framework.SAP.BusinessOne.Entities.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.Entities\bin\Debug\Orkidea.Framework.SAP.BusinessOne.Entities.pdb
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.Entities\obj\Debug\Orkidea.Framework.SAP.BusinessOne.Entities.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.Entities\obj\Debug\Orkidea.Framework.SAP.BusinessOne.Entities.pdb

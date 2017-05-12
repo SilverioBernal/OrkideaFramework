@@ -1,0 +1,9 @@
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.Security\bin\Debug\Orkidea.Framework.Security.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.Security\bin\Debug\Orkidea.Framework.Security.pdb
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.Security\obj\Debug\Orkidea.Framework.Security.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.Security\obj\Debug\Orkidea.Framework.Security.pdb
+d:\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.Security\bin\Debug\Orkidea.Framework.Security.dll
+d:\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.Security\bin\Debug\Orkidea.Framework.Security.pdb
+d:\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.Security\obj\Debug\Orkidea.Framework.Security.csprojResolveAssemblyReference.cache
+d:\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.Security\obj\Debug\Orkidea.Framework.Security.dll
+d:\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.Security\obj\Debug\Orkidea.Framework.Security.pdb

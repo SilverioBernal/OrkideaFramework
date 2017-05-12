@@ -1,0 +1,17 @@
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.DiApiClient\obj\Release\Orkidea.Framework.SAP.BusinessOne.DiApiClient.pdb
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.DiApiClient\obj\Release\Interop.SAPbobsCOM.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.DiApiClient\obj\Release\Orkidea.Framework.SAP.BusinessOne.DiApiClient.csproj.ResolveComReference.cache
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.DiApiClient\bin\Release\Orkidea.Framework.SAP.BusinessOne.DiApiClient.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.DiApiClient\bin\Release\Orkidea.Framework.SAP.BusinessOne.DiApiClient.pdb
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.DiApiClient\bin\Release\Microsoft.Practices.EnterpriseLibrary.Common.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.DiApiClient\bin\Release\Microsoft.Practices.EnterpriseLibrary.Data.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.DiApiClient\bin\Release\Microsoft.Practices.EnterpriseLibrary.ExceptionHandling.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.DiApiClient\bin\Release\Microsoft.Practices.EnterpriseLibrary.ExceptionHandling.Logging.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.DiApiClient\bin\Release\Microsoft.Practices.EnterpriseLibrary.Logging.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.DiApiClient\bin\Release\Microsoft.Practices.ServiceLocation.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.DiApiClient\bin\Release\Microsoft.Practices.Unity.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.DiApiClient\bin\Release\Microsoft.Practices.Unity.Interception.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.DiApiClient\bin\Release\Orkidea.Framework.SAP.BusinessOne.Entities.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.DiApiClient\bin\Release\Orkidea.Framework.SAP.BusinessOne.Entities.pdb
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.DiApiClient\obj\Release\Orkidea.Framework.SAP.BusinessOne.DiApiClient.csprojResolveAssemblyReference.cache
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.DiApiClient\obj\Release\Orkidea.Framework.SAP.BusinessOne.DiApiClient.dll

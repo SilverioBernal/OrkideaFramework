@@ -1,0 +1,10 @@
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.Data\obj\Release\Orkidea.Framework.Data.pdb
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.Data\bin\Release\Orkidea.Framework.Data.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.Data\bin\Release\Orkidea.Framework.Data.pdb
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.Data\obj\Release\Orkidea.Framework.Data.csprojResolveAssemblyReference.cache
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.Data\obj\Release\Orkidea.Framework.Data.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.Data\bin\Release\Orkidea.Framework.Data.dll.config
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.Data\bin\Release\EntityFramework.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.Data\bin\Release\EntityFramework.SqlServer.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.Data\bin\Release\EntityFramework.xml
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.Data\bin\Release\EntityFramework.SqlServer.xml

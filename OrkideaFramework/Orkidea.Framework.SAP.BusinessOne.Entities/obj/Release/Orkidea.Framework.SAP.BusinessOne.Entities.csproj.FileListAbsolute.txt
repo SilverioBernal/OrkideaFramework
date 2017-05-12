@@ -1,0 +1,5 @@
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.Entities\obj\Release\Orkidea.Framework.SAP.BusinessOne.Entities.pdb
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.Entities\bin\Release\Orkidea.Framework.SAP.BusinessOne.Entities.dll
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.Entities\bin\Release\Orkidea.Framework.SAP.BusinessOne.Entities.pdb
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.Entities\obj\Release\Orkidea.Framework.SAP.BusinessOne.Entities.csprojResolveAssemblyReference.cache
+C:\Users\Aguila1\Source\Repos\OrkideaFramework\OrkideaFramework\Orkidea.Framework.SAP.BusinessOne.Entities\obj\Release\Orkidea.Framework.SAP.BusinessOne.Entities.dll
